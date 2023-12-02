@@ -2,7 +2,7 @@ package com.sinkovits.aoc2023;
 
 public class Main {
     public static void main(String[] args) {
-        AdventOfCodeDailyExercise exercise = new Day2();
+        AdventOfCodeDailyExercise exercise = new Day1();
         exercise.solveFirst();
         exercise.solveSecond();
     }
