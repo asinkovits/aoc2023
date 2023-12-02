@@ -1,6 +1,8 @@
 package com.sinkovits.aoc2023;
 
 import lombok.Builder;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,16 +10,29 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
 public class Day2 implements AdventOfCodeDailyExercise {
+
+    private static final SetOfCubes SOLUTION_1_CONSTRAINTS = SetOfCubes.of(
+            ColorAndNumber.of(Color.RED, 12),
+            ColorAndNumber.of(Color.GREEN, 13),
+            ColorAndNumber.of(Color.BLUE, 14)
+    );
 
     private enum Color {
         RED, BLUE, GREEN
     }
 
     private record ColorAndNumber(Color color, int number) implements Comparable<ColorAndNumber> {
+        static final ColorAndNumber EMPTY_RED = ColorAndNumber.of(Color.RED, 0);
+        static final ColorAndNumber EMPTY_GREEN = ColorAndNumber.of(Color.GREEN, 0);
+        static final ColorAndNumber EMPTY_BLUE = ColorAndNumber.of(Color.BLUE, 0);
+        static final Comparator<ColorAndNumber> COMPARATOR = Comparator
+                .comparingInt(ColorAndNumber::number);
+
         static ColorAndNumber of(Color color, int number) {
             return new ColorAndNumber(color, number);
         }
@@ -27,19 +42,32 @@ public class Day2 implements AdventOfCodeDailyExercise {
             return of(Color.valueOf(split[1].toUpperCase()), Integer.parseInt(split[0]));
         }
 
-
         @Override
         public int compareTo(ColorAndNumber o) {
-            return Comparator
-                    .comparingInt(ColorAndNumber::number)
+            return COMPARATOR
                     .compare(this, o);
         }
     }
 
     @Builder
-    private record SetOfCubes(ColorAndNumber reds, ColorAndNumber greens, ColorAndNumber blues) {
+    @RequiredArgsConstructor
+    private static class SetOfCubes {
+        @NonNull
+        @Builder.Default
+        private final ColorAndNumber reds = ColorAndNumber.EMPTY_RED;
+        @NonNull
+        @Builder.Default
+        private final ColorAndNumber greens = ColorAndNumber.EMPTY_BLUE;
+        @NonNull
+        @Builder.Default
+        private final ColorAndNumber blues = ColorAndNumber.EMPTY_GREEN;
+
         static SetOfCubes of(ColorAndNumber reds, ColorAndNumber greens, ColorAndNumber blues) {
-            return new SetOfCubes(reds, greens, blues);
+            return SetOfCubes.builder()
+                    .reds(reds)
+                    .greens(greens)
+                    .blues(blues)
+                    .build();
         }
 
         static SetOfCubes parse(String input) {
@@ -56,17 +84,14 @@ public class Day2 implements AdventOfCodeDailyExercise {
             return builder.build();
         }
 
-        public boolean isValid(SetOfCubes configuration) {
-            if (this.reds != null && this.reds.compareTo(configuration.reds) > 0) {
-                return false;
-            }
-            if (this.greens != null && this.greens.compareTo(configuration.greens) > 0) {
-                return false;
-            }
-            if (this.blues != null && this.blues.compareTo(configuration.blues) > 0) {
-                return false;
-            }
-            return true;
+        public boolean isValid(SetOfCubes constraints) {
+            return reds.compareTo(constraints.reds) <= 0 &&
+                    greens.compareTo(constraints.greens) <= 0 &&
+                    blues.compareTo(constraints.blues) <= 0;
+        }
+
+        int power() {
+            return reds.number * greens.number * blues.number;
         }
     }
 
@@ -76,7 +101,7 @@ public class Day2 implements AdventOfCodeDailyExercise {
             //Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
             Game.GameBuilder builder = Game.builder();
             String[] gameAndSets = line.split(":");
-            builder.id(Integer.parseInt(gameAndSets[0].split(" ")[1]));
+            builder.id(Integer.parseInt(gameAndSets[0].split(StringUtils.SPACE)[1]));
             String[] sets = gameAndSets[1].split(";");
             builder.sets(Arrays.stream(sets)
                     .map(SetOfCubes::parse)
@@ -84,25 +109,48 @@ public class Day2 implements AdventOfCodeDailyExercise {
             return builder.build();
         }
 
-        public boolean isValid(SetOfCubes configuration) {
+        public boolean isValid(SetOfCubes constraints) {
             return sets
                     .stream()
-                    .allMatch(set -> set.isValid(configuration));
+                    .allMatch(set -> set.isValid(constraints));
+        }
+
+        SetOfCubes fewestNumberCubesRequired() {
+            Optional<ColorAndNumber> red = sets
+                    .stream()
+                    .map(setOfCubes -> setOfCubes.reds)
+                    .max(ColorAndNumber::compareTo);
+
+            Optional<ColorAndNumber> green = sets
+                    .stream()
+                    .map(setOfCubes -> setOfCubes.greens)
+                    .max(ColorAndNumber::compareTo);
+
+            Optional<ColorAndNumber> blue = sets
+                    .stream()
+                    .map(setOfCubes -> setOfCubes.blues)
+                    .max(ColorAndNumber::compareTo);
+
+            return SetOfCubes.of(
+                   red.orElseThrow(),
+                   green.orElseThrow(),
+                   blue.orElseThrow()
+            );
         }
     }
 
     private void processLineSolution1(String line, CountingContext context) {
         Game game = Game.parse(line);
-        if (game.isValid(CONFIGURATION)) {
+        if (game.isValid(SOLUTION_1_CONSTRAINTS)) {
             context.add(game.id());
         }
     }
 
-    private static final SetOfCubes CONFIGURATION = SetOfCubes.of(
-            ColorAndNumber.of(Color.RED, 12),
-            ColorAndNumber.of(Color.GREEN, 13),
-            ColorAndNumber.of(Color.BLUE, 14)
-    );
+    private void processLineSolution2(String line, CountingContext context) {
+        Game game = Game.parse(line);
+        SetOfCubes fewestNumberCubesRequired = game.fewestNumberCubesRequired();
+        context.add(fewestNumberCubesRequired.power());
+    }
 
     @Override
     public void solveFirst() {
@@ -113,7 +161,9 @@ public class Day2 implements AdventOfCodeDailyExercise {
 
     @Override
     public void solveSecond() {
-
+        LineProcessor<CountingContext> lineProcessor = getDay2ContextLineReader();
+        CountingContext context = lineProcessor.processLines(this::processLineSolution2);
+        log.info("Solution for the second exercise: {}", context.getSum());
     }
 
     private static LineProcessor<CountingContext> getDay2ContextLineReader() {
