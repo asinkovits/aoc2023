@@ -1,6 +1,6 @@
-package org.example;
+package com.sinkovits.aoc2023;
 
-public interface Day {
+public interface AdventOfCodeDailyExercise {
 
     void solveFirst();
     void solveSecond();

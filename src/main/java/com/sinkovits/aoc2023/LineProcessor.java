@@ -1,4 +1,4 @@
-package org.example;
+package com.sinkovits.aoc2023;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,13 +1,16 @@
-package org.example;
+package com.sinkovits.aoc2023;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.nio.file.Path;
 
 @Slf4j
-public class Day1 implements Day {
+public class Day1 implements AdventOfCodeDailyExercise {
+
+    public static final String NON_NUMERIC_REGEX = "[^0-9]";
 
     @Getter
     private static final class Day1Context {
@@ -34,14 +37,18 @@ public class Day1 implements Day {
         }
     }
 
-    private void processLine1(String input, Day1Context context) {
+    private void processLineSolution1(String input, Day1Context context) {
         String replace = removeNonNumeric(input);
-        String fn = replace.charAt(0) + "" + replace.charAt(replace.length() - 1);
-        context.add(Integer.parseInt(fn));
+        int calibrationValue = extractCalibrationValue(replace);
+        context.add(calibrationValue);
     }
 
+    private void processLineSolution2(String input, Day1Context context) {
+        String preprocessedInput = resolveFirstAndLastDigitsSpelledOutWithLetters(input);
+        processLineSolution1(preprocessedInput, context);
+    }
 
-    private void processLine2(String input, Day1Context context) {
+    private String resolveFirstAndLastDigitsSpelledOutWithLetters(String input) {
         Pair<NumberPosition, NumberPosition> positions = findFirsAndLastPositions(input);
         StringBuilder sb = new StringBuilder(input);
         if (positions.getLeft() != null) {
@@ -50,13 +57,16 @@ public class Day1 implements Day {
         if (positions.getRight() != null) {
             sb.insert(positions.getRight().position + 1, positions.getRight().numbers.value);
         }
-        String replace = removeNonNumeric(sb.toString());
-        String fn = replace.charAt(0) + "" + replace.charAt(replace.length() - 1);
-        context.add(Integer.parseInt(fn));
+        return sb.toString();
     }
 
-    private String removeNonNumeric(String line) {
-        return line.replaceAll("[^0-9]", "");
+    private String removeNonNumeric(String input) {
+        return input.replaceAll(NON_NUMERIC_REGEX, StringUtils.EMPTY);
+    }
+
+    private static int extractCalibrationValue(String input) {
+        String fn = String.format("%c%c", input.charAt(0), input.charAt(input.length() - 1));
+        return Integer.parseInt(fn);
     }
 
     private Pair<NumberPosition, NumberPosition> findFirsAndLastPositions(String input) {
@@ -88,13 +98,13 @@ public class Day1 implements Day {
 
     public void solveFirst() {
         LineProcessor<Day1Context> lineProcessor = getDay1ContextLineReader();
-        Day1Context context = lineProcessor.processLines(this::processLine1);
+        Day1Context context = lineProcessor.processLines(this::processLineSolution1);
         log.info("Solution for the first exercise: {}", context.getSum());
     }
 
     public void solveSecond() {
         LineProcessor<Day1Context> lineProcessor = getDay1ContextLineReader();
-        var context = lineProcessor.processLines(this::processLine2);
+        var context = lineProcessor.processLines(this::processLineSolution2);
         log.info("Solution for the second exercise: {}", context.getSum());
 
     }
