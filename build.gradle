@@ -3,6 +3,8 @@ plugins {
     id 'io.freefair.lombok' version '8.4'
 }
 
+apply plugin: 'application'
+mainClassName = 'com.sinkovits.aoc2023.Main'
 group 'org.example'
 version '1.0-SNAPSHOT'
 
