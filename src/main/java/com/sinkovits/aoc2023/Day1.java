@@ -1,6 +1,5 @@
 package com.sinkovits.aoc2023;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -11,15 +10,6 @@ import java.nio.file.Path;
 public class Day1 implements AdventOfCodeDailyExercise {
 
     public static final String NON_NUMERIC_REGEX = "[^0-9]";
-
-    @Getter
-    private static final class Day1Context {
-        private int sum = 0;
-
-        public void add(int value) {
-            sum += value;
-        }
-    }
 
     private enum Numbers {
         ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9);
@@ -37,13 +27,13 @@ public class Day1 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private void processLineSolution1(String input, Day1Context context) {
+    private void processLineSolution1(String input, CountingContext context) {
         String replace = removeNonNumeric(input);
         int calibrationValue = extractCalibrationValue(replace);
         context.add(calibrationValue);
     }
 
-    private void processLineSolution2(String input, Day1Context context) {
+    private void processLineSolution2(String input, CountingContext context) {
         String preprocessedInput = resolveFirstAndLastDigitsSpelledOutWithLetters(input);
         processLineSolution1(preprocessedInput, context);
     }
@@ -97,22 +87,22 @@ public class Day1 implements AdventOfCodeDailyExercise {
     }
 
     public void solveFirst() {
-        LineProcessor<Day1Context> lineProcessor = getDay1ContextLineReader();
-        Day1Context context = lineProcessor.processLines(this::processLineSolution1);
+        LineProcessor<CountingContext> lineProcessor = getDay1ContextLineReader();
+        CountingContext context = lineProcessor.processLines(this::processLineSolution1);
         log.info("Solution for the first exercise: {}", context.getSum());
     }
 
     public void solveSecond() {
-        LineProcessor<Day1Context> lineProcessor = getDay1ContextLineReader();
+        LineProcessor<CountingContext> lineProcessor = getDay1ContextLineReader();
         var context = lineProcessor.processLines(this::processLineSolution2);
         log.info("Solution for the second exercise: {}", context.getSum());
 
     }
 
-    private static LineProcessor<Day1Context> getDay1ContextLineReader() {
+    private static LineProcessor<CountingContext> getDay1ContextLineReader() {
         return new LineProcessor<>(
                 Path.of("C:\\Users\\Anti\\dev\\aoc2023\\src\\main\\resources\\input_day1"),
-                new Day1Context()
+                new CountingContext()
         );
     }
 }
