@@ -27,15 +27,15 @@ public class Day1 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private void processLineSolution1(String input, CountingContext context) {
+    private void processLineSolution1(int lineNumber, String input, CountingContext context) {
         String replace = removeNonNumeric(input);
         int calibrationValue = extractCalibrationValue(replace);
         context.add(calibrationValue);
     }
 
-    private void processLineSolution2(String input, CountingContext context) {
+    private void processLineSolution2(int lineNumber, String input, CountingContext context) {
         String preprocessedInput = resolveFirstAndLastDigitsSpelledOutWithLetters(input);
-        processLineSolution1(preprocessedInput, context);
+        processLineSolution1(lineNumber, preprocessedInput, context);
     }
 
     private String resolveFirstAndLastDigitsSpelledOutWithLetters(String input) {

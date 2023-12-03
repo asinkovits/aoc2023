@@ -139,14 +139,14 @@ public class Day2 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private void processLineSolution1(String line, CountingContext context) {
+    private void processLineSolution1(int lineNumber, String line, CountingContext context) {
         Game game = Game.parse(line);
         if (game.isValid(SOLUTION_1_CONSTRAINTS)) {
             context.add(game.id());
         }
     }
 
-    private void processLineSolution2(String line, CountingContext context) {
+    private void processLineSolution2(int lineNumber, String line, CountingContext context) {
         Game game = Game.parse(line);
         SetOfCubes fewestNumberCubesRequired = game.fewestNumberCubesRequired();
         context.add(fewestNumberCubesRequired.power());
