@@ -1,6 +1,6 @@
 package com.sinkovits.aoc2023;
 
-import lombok.Setter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,52 +8,34 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.LongStream;
 
+import static com.sinkovits.aoc2023.ParsingUtil.*;
+
 @Slf4j
 public class Day5 implements AdventOfCodeDailyExercise {
 
-    private static final int RADIX = 10;
+    public static final String COLON = ":";
 
     private record MappingRule(long destinationStart, long sourceStart, long length) {
+
+        static MappingRule of(List<Long> input) {
+            return new MappingRule(input.get(0), input.get(1), input.get(2));
+        }
     }
 
-    @Setter
-    private static class Day5Context {
-        MappingRuleType mappingRuleType = null;
-        LongStream seeds;
-        EnumMap<MappingRuleType, List<MappingRule>> mappingRules = new EnumMap<>(MappingRuleType.class);
+    @Data
+    private static class Context {
+        private MappingRuleType mappingRuleType = null;
+        private LongStream seeds;
+        private EnumMap<MappingRuleType, List<MappingRule>> mappingRules = new EnumMap<>(MappingRuleType.class);
 
-        public void setMappingRules(MappingRuleType mappingRuleType, List<Long> mappingRules) {
+        public void addMappingRule(MappingRuleType mappingRuleType, MappingRule mappingRule) {
             this.mappingRuleType = mappingRuleType;
             this.mappingRules.computeIfAbsent(mappingRuleType, k -> new ArrayList<>())
-                    .add(new MappingRule(mappingRules.get(0), mappingRules.get(1), mappingRules.get(2)));
-        }
-
-        public long getMin() {
-            return seeds.parallel()
-                    .map(seed -> mapTo(seed, mappingRules.get(MappingRuleType.S_TO_S)))
-                    .map(soil -> mapTo(soil, mappingRules.get(MappingRuleType.S_TO_F)))
-                    .map(fertilizer -> mapTo(fertilizer, mappingRules.get(MappingRuleType.F_TO_W)))
-                    .map(water -> mapTo(water, mappingRules.get(MappingRuleType.W_TO_L)))
-                    .map(light -> mapTo(light, mappingRules.get(MappingRuleType.L_TO_T)))
-                    .map(temperature -> mapTo(temperature, mappingRules.get(MappingRuleType.T_TO_H)))
-                    .map(humidity -> mapTo(humidity, mappingRules.get(MappingRuleType.H_TO_L)))
-                    .min()
-                    .orElseThrow();
-        }
-
-        long mapTo(long from, List<MappingRule> rules) {
-            return rules.stream()
-                    .filter(rule -> rule.sourceStart <= from)
-                    .filter(rule -> from < rule.sourceStart + rule.length)
-                    .findFirst()
-                    .map(rule ->
-                            rule.destinationStart - rule.sourceStart + from)
-                    .orElse(from);
+                    .add(mappingRule);
         }
     }
 
     private enum MappingRuleType {
-        S("seeds:"),
         S_TO_S("seed-to-soil map:"),
         S_TO_F("soil-to-fertilizer map:"),
         F_TO_W("fertilizer-to-water map:"),
@@ -69,95 +51,103 @@ public class Day5 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private LongStream parseSeeds(String input) {
-        List<Long> longs = parseNumbers(input);
-        return longs.stream().mapToLong(l -> l);
-    }
-
-    private List<Long> parseNumbers(String input) {
-        List<Long> result = new ArrayList<>();
-        long value = 0;
-        for (char aChar : input.toCharArray()) {
-            if (Character.isDigit(aChar)) {
-                value = (value * RADIX) + Character.digit(aChar, RADIX);
-            } else {
-                result.add(value);
-                value = 0;
-            }
-        }
-        result.add(value);
-        return result;
-    }
-
-    private void processLineSolution1(int lineNumber, String line, Day5Context context) {
-        if (StringUtils.EMPTY.equals(line.trim())) {
-            context.mappingRuleType = null;
-            return;
-        }
-        if (lineNumber == 0) {
-            context.setSeeds(parseSeeds(line.split(":")[1].trim()));
-        }
-        Optional<MappingRuleType> parseState = tryParseStateChange(line);
-        parseState.ifPresentOrElse(context::setMappingRuleType, () ->
-                parseData(line, context));
-    }
-
-    private void processLineSolution2(int lineNumber, String line, Day5Context context) {
-        if (StringUtils.EMPTY.equals(line.trim())) {
-            context.mappingRuleType = null;
-            return;
-        }
-        if (lineNumber == 0) {
-            context.setSeeds(getSeeds(line));
-        }
-        Optional<MappingRuleType> parseState = tryParseStateChange(line);
-        parseState.ifPresentOrElse(context::setMappingRuleType, () ->
-                parseData(line, context));
-    }
-
-    private LongStream getSeeds(String line) {
-        List<Long> longs = parseNumbers(line.split(":")[1].trim());
-        return LongStream.concat(
-                        LongStream.range(longs.get(0), longs.get(0) + longs.get(1)),
-                        LongStream.range(longs.get(2), longs.get(2) + longs.get(3)));
-    }
-
-    private Optional<MappingRuleType> tryParseStateChange(String line) {
-        return Arrays.stream(MappingRuleType.values())
-                .filter(ps -> line.trim().contains(ps.command))
-                .findFirst();
-    }
-
-    private void parseData(String line, Day5Context context) {
-        switch (context.mappingRuleType) {
-            case S_TO_S, S_TO_F, F_TO_W, W_TO_L, L_TO_T, T_TO_H, H_TO_L ->
-                    context.setMappingRules(context.mappingRuleType, parseNumbers(line));
-        }
-    }
-
     @Override
     public int solveFirst() {
-        LineProcessor<Day5Context> lineProcessor = getContextLineReader();
-        Day5Context context = lineProcessor.processLines(this::processLineSolution1);
-        long min = context.getMin();
+        LineProcessor<Context> lineProcessor = getContextLineReader();
+        Context context = lineProcessor.processLines(this::processLineSolution1);
+        long min = calculateMinimumLocation(context.seeds, context.mappingRules);
         log.info("Solution for the first exercise: {}", min);
         return (int) min;
     }
 
     @Override
     public int solveSecond() {
-        LineProcessor<Day5Context> lineProcessor = getContextLineReader();
-        Day5Context context = lineProcessor.processLines(this::processLineSolution2);
-        long min = context.getMin();
+        LineProcessor<Context> lineProcessor = getContextLineReader();
+        Context context = lineProcessor.processLines(this::processLineSolution2);
+        long min = calculateMinimumLocation(context.seeds, context.mappingRules);
         log.info("Solution for the second exercise: {}", min);
         return (int) min;
     }
 
 
-    private static LineProcessor<Day5Context> getContextLineReader() {
+    private static LineProcessor<Context> getContextLineReader() {
         return new LineProcessor<>(
                 Path.of("input_day5"),
-                new Day5Context()
+                new Context()
         );
+    }
+
+    private void processLineSolution1(int lineNumber, String line, Context context) {
+        if (lineNumber == 0) {
+            context.setSeeds(parseSeeds1(line.split(COLON)[1].trim()));
+        } else {
+            parseLineCommon(line, context);
+        }
+    }
+
+    private void processLineSolution2(int lineNumber, String line, Context context) {
+        if (lineNumber == 0) {
+            context.setSeeds(parseSeeds2(line.split(COLON)[1].trim()));
+        } else {
+            parseLineCommon(line, context);
+        }
+    }
+
+    private LongStream parseSeeds1(String input) {
+        return parseNumbers(input)
+                .stream()
+                .mapToLong(Long::longValue);
+    }
+
+    private LongStream parseSeeds2(String input) {
+        List<Long> longs = parseNumbers(input);
+        return LongStream.concat(
+                LongStream.range(longs.get(0), longs.get(0) + longs.get(1)),
+                LongStream.range(longs.get(2), longs.get(2) + longs.get(3)));
+    }
+
+    private void parseLineCommon(String line, Context context) {
+        if (StringUtils.EMPTY.equals(line.trim())) {
+            context.mappingRuleType = null;
+            return;
+        }
+        Optional<MappingRuleType> parseState = tryParseStateChange(line);
+        parseState.ifPresentOrElse(context::setMappingRuleType, () ->
+                parseData(line, context));
+    }
+
+    private Optional<MappingRuleType> tryParseStateChange(String line) {
+        return line.contains(COLON) ? Arrays.stream(MappingRuleType.values())
+                .filter(ps -> line.trim().contains(ps.command))
+                .findFirst() : Optional.empty();
+    }
+
+    private void parseData(String line, Context context) {
+        if (context.mappingRuleType != null) {
+            context.addMappingRule(context.mappingRuleType, MappingRule.of(parseNumbers(line)));
+        }
+    }
+
+    private long calculateMinimumLocation(LongStream seeds, EnumMap<MappingRuleType, List<MappingRule>> mappingRules) {
+        return seeds.parallel()
+                .map(seed -> mapTo(seed, mappingRules.get(MappingRuleType.S_TO_S)))
+                .map(soil -> mapTo(soil, mappingRules.get(MappingRuleType.S_TO_F)))
+                .map(fertilizer -> mapTo(fertilizer, mappingRules.get(MappingRuleType.F_TO_W)))
+                .map(water -> mapTo(water, mappingRules.get(MappingRuleType.W_TO_L)))
+                .map(light -> mapTo(light, mappingRules.get(MappingRuleType.L_TO_T)))
+                .map(temperature -> mapTo(temperature, mappingRules.get(MappingRuleType.T_TO_H)))
+                .map(humidity -> mapTo(humidity, mappingRules.get(MappingRuleType.H_TO_L)))
+                .min()
+                .orElseThrow();
+    }
+
+    long mapTo(long from, List<MappingRule> rules) {
+        return rules.stream()
+                .filter(rule -> rule.sourceStart <= from)
+                .filter(rule -> from < rule.sourceStart + rule.length)
+                .findFirst()
+                .map(rule ->
+                        rule.destinationStart - rule.sourceStart + from)
+                .orElse(from);
     }
 }
