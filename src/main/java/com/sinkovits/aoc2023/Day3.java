@@ -136,7 +136,7 @@ public class Day3 implements AdventOfCodeDailyExercise {
     public int solveSecond() {
         LineProcessor<Day3Context> lineProcessor = getDay3ContextLineReader();
         Day3Context context = lineProcessor.processLines(this::processLineSolution2);
-        log.info("Solution for the first exercise: {}", context.getSum());
+        log.info("Solution for the second exercise: {}", context.getSum());
         return context.getSum();
     }
 
