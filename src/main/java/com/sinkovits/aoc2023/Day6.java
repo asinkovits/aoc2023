@@ -8,7 +8,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
 @Slf4j
 public class Day6 implements AdventOfCodeDailyExercise {
@@ -33,7 +32,7 @@ public class Day6 implements AdventOfCodeDailyExercise {
     public int solveFirst() {
         LineProcessor<Context> lineProcessor = getContextLineReader();
         Context context = lineProcessor.processLines(this::processLineSolution1);
-        long result = calculateValueBruteForce(context);
+        long result = calculateResult(context);
         log.info("Solution for the first exercise: {}", result);
         return (int) result;
     }
@@ -42,15 +41,15 @@ public class Day6 implements AdventOfCodeDailyExercise {
     public int solveSecond() {
         LineProcessor<Context> lineProcessor = getContextLineReader();
         Context context = lineProcessor.processLines(this::processLineSolution2);
-        long result = calculateValueBruteForce(context);
+        long result = calculateResult(context);
         log.info("Solution for the second exercise: {}", result);
         return (int) result;
     }
 
-    private long calculateValueBruteForce(Context context) {
+    private long calculateResult(Context context) {
         return IntStream.range(0, context.distances.size())
                 .mapToObj(i -> Pair.of(context.times.get(i), context.distances.get(i)))
-                .map(this::bruteForce)
+                .map(this::quadratic)
                 .reduce(1L, (a, b) -> a * b);
     }
 
@@ -74,10 +73,14 @@ public class Day6 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private long bruteForce(Pair<Long, Long> timeDistancePair) {
-        return LongStream.range(1, timeDistancePair.getLeft())
-                .filter(i -> i * (timeDistancePair.getLeft() - i) > timeDistancePair.getRight())
-                .count();
+    private long quadratic(Pair<Long, Long> timeDistancePair) {
+        double a = 1.0;
+        double b = -timeDistancePair.getLeft();
+        double c = timeDistancePair.getRight();
+        double x1 =  ((-1 * b) + Math.sqrt((b * b) - (4*a*c))) / (2 * a);
+        //double x2 =  ((-1 * b) - Math.sqrt((b * b) - (4*a*c))) / (2 * a);
+        double x2 = timeDistancePair.getLeft() - x1;
+        return 1L + ((long) Math.floor(x1) - (long) Math.ceil(x2));
     }
 
     private static LineProcessor<Context> getContextLineReader() {
