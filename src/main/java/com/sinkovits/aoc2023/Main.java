@@ -9,7 +9,11 @@ public class Main {
             new Day2(),
             new Day3(),
             new Day4(),
-            new Day5()
+            new Day5(),
+            new Day6(),
+            new Day7(),
+            new Day8(),
+            new Day9()
     };
 
     public static void main(String[] args) {
