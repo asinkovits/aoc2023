@@ -13,7 +13,7 @@ class Day4Test {
     @Disabled
     void solveFirst() {
         // When
-        int result = day4.solveFirst();
+        long result = day4.solveFirst();
 
         // Then
         assertEquals(17803, result);
@@ -22,7 +22,7 @@ class Day4Test {
     @Test
     void solveSecond() {
         // When
-        int result = day4.solveSecond();
+        long result = day4.solveSecond();
 
         // Then
         assertEquals(5554894, result);

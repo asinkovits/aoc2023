@@ -86,14 +86,14 @@ public class Day1 implements AdventOfCodeDailyExercise {
         );
     }
 
-    public int solveFirst() {
+    public long solveFirst() {
         LineProcessor<CountingContext> lineProcessor = getDay1ContextLineReader();
         CountingContext context = lineProcessor.processLines(this::processLineSolution1);
         log.info("Solution for the first exercise: {}", context.getSum());
         return context.getSum();
     }
 
-    public int solveSecond() {
+    public long solveSecond() {
         LineProcessor<CountingContext> lineProcessor = getDay1ContextLineReader();
         var context = lineProcessor.processLines(this::processLineSolution2);
         log.info("Solution for the second exercise: {}", context.getSum());

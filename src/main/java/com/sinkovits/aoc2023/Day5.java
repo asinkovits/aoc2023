@@ -52,7 +52,7 @@ public class Day5 implements AdventOfCodeDailyExercise {
     }
 
     @Override
-    public int solveFirst() {
+    public long solveFirst() {
         LineProcessor<Context> lineProcessor = getContextLineReader();
         Context context = lineProcessor.processLines(this::processLineSolution1);
         long min = calculateMinimumLocation(context.seeds, context.mappingRules);
@@ -61,7 +61,7 @@ public class Day5 implements AdventOfCodeDailyExercise {
     }
 
     @Override
-    public int solveSecond() {
+    public long solveSecond() {
         LineProcessor<Context> lineProcessor = getContextLineReader();
         Context context = lineProcessor.processLines(this::processLineSolution2);
         long min = calculateMinimumLocation(context.seeds, context.mappingRules);

@@ -76,7 +76,7 @@ public class Day4 implements AdventOfCodeDailyExercise {
     }
 
     @Override
-    public int solveFirst() {
+    public long solveFirst() {
         LineProcessor<Day4Context> lineProcessor = getContextLineReader();
         Day4Context context = lineProcessor.processLines(this::processLineSolution1);
         log.info("Solution for the first exercise: {}", context.getSum());
@@ -85,7 +85,7 @@ public class Day4 implements AdventOfCodeDailyExercise {
 
 
     @Override
-    public int solveSecond() {
+    public long solveSecond() {
         LineProcessor<Day4Context> lineProcessor = getContextLineReader();
         Day4Context context = lineProcessor.processLines(this::processLineSolution2);
         log.info("Solution for the second exercise: {}", context.getSum());

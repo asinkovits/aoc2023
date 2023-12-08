@@ -17,7 +17,7 @@ class Day3Test {
     @Test
     void solveFirst() {
         // When
-        int result = day3.solveFirst();
+        long result = day3.solveFirst();
 
         // Then
         assertEquals(527364, result);
@@ -26,7 +26,7 @@ class Day3Test {
     @Test
     void solveSecond() {
         // When
-        int result = day3.solveSecond();
+        long result = day3.solveSecond();
 
         // Then
         assertEquals(79026871, result);

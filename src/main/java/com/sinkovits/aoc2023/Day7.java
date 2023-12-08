@@ -138,21 +138,21 @@ public class Day7 implements AdventOfCodeDailyExercise {
     }
 
     @Override
-    public int solveFirst() {
+    public long solveFirst() {
         LineProcessor<Context> lineProcessor = getContextLineReader();
         Context context = lineProcessor.processLines(this::processLineSolution1);
         long result = calculateResult(context);
         log.info("Solution for the first exercise: {}", result);
-        return (int) result;
+        return result;
     }
 
     @Override
-    public int solveSecond() {
+    public long solveSecond() {
         LineProcessor<Context> lineProcessor = getContextLineReader();
         Context context = lineProcessor.processLines(this::processLineSolution2);
         long result = calculateResult(context);
         log.info("Solution for the second exercise: {}", result);
-        return (int) result;
+        return result;
     }
 
     private void processLineSolution1(Integer lineNumber, String line, Context context) {
