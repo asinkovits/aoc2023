@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 
-
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractDay<T> implements AdventOfCodeDailyExercise {
@@ -35,10 +34,11 @@ public abstract class AbstractDay<T> implements AdventOfCodeDailyExercise {
     protected LineProcessor<T> getContextLineReader(String input) {
         try {
             return new LineProcessor<>(
-                    Path.of(input),
-                    contextClazz.getDeclaredConstructor().newInstance()
-            );
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                    Path.of(input), contextClazz.getDeclaredConstructor().newInstance());
+        } catch (InstantiationException
+                | IllegalAccessException
+                | NoSuchMethodException
+                | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

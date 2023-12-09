@@ -61,11 +61,13 @@ public class Day5 extends AbstractDay<Context> {
     protected static class Context {
         private MappingRuleType mappingRuleType = null;
         private LongStream seeds;
-        private EnumMap<MappingRuleType, List<MappingRule>> mappingRules = new EnumMap<>(MappingRuleType.class);
+        private EnumMap<MappingRuleType, List<MappingRule>> mappingRules =
+                new EnumMap<>(MappingRuleType.class);
 
         public void addMappingRule(MappingRuleType mappingRuleType, MappingRule mappingRule) {
             this.mappingRuleType = mappingRuleType;
-            this.mappingRules.computeIfAbsent(mappingRuleType, k -> new ArrayList<>())
+            this.mappingRules
+                    .computeIfAbsent(mappingRuleType, k -> new ArrayList<>())
                     .add(mappingRule);
         }
     }
@@ -87,9 +89,7 @@ public class Day5 extends AbstractDay<Context> {
     }
 
     private LongStream parseSeeds1(String input) {
-        return parseNumbers(input)
-                .stream()
-                .mapToLong(Long::longValue);
+        return parseNumbers(input).stream().mapToLong(Long::longValue);
     }
 
     private LongStream parseSeeds2(String input) {
@@ -105,14 +105,15 @@ public class Day5 extends AbstractDay<Context> {
             return;
         }
         Optional<MappingRuleType> parseState = tryParseStateChange(line);
-        parseState.ifPresentOrElse(context::setMappingRuleType, () ->
-                parseData(line, context));
+        parseState.ifPresentOrElse(context::setMappingRuleType, () -> parseData(line, context));
     }
 
     private Optional<MappingRuleType> tryParseStateChange(String line) {
-        return line.contains(COLON) ? Arrays.stream(MappingRuleType.values())
-                .filter(ps -> line.trim().contains(ps.command))
-                .findFirst() : Optional.empty();
+        return line.contains(COLON)
+                ? Arrays.stream(MappingRuleType.values())
+                        .filter(ps -> line.trim().contains(ps.command))
+                        .findFirst()
+                : Optional.empty();
     }
 
     private void parseData(String line, Context context) {
@@ -121,7 +122,8 @@ public class Day5 extends AbstractDay<Context> {
         }
     }
 
-    private long calculateMinimumLocation(LongStream seeds, EnumMap<MappingRuleType, List<MappingRule>> mappingRules) {
+    private long calculateMinimumLocation(
+            LongStream seeds, EnumMap<MappingRuleType, List<MappingRule>> mappingRules) {
         return seeds.parallel()
                 .map(seed -> mapTo(seed, mappingRules.get(MappingRuleType.S_TO_S)))
                 .map(soil -> mapTo(soil, mappingRules.get(MappingRuleType.S_TO_F)))
@@ -139,8 +141,7 @@ public class Day5 extends AbstractDay<Context> {
                 .filter(rule -> rule.sourceStart <= from)
                 .filter(rule -> from < rule.sourceStart + rule.length)
                 .findFirst()
-                .map(rule ->
-                        rule.destinationStart - rule.sourceStart + from)
+                .map(rule -> rule.destinationStart - rule.sourceStart + from)
                 .orElse(from);
     }
 }

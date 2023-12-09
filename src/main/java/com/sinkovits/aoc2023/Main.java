@@ -5,15 +5,15 @@ import java.util.Arrays;
 public class Main {
 
     public static final AdventOfCodeDailyExercise[] EXERCISES = {
-            new Day1(),
-            new Day2(),
-            new Day3(),
-            new Day4(),
-            new Day5(),
-            new Day6(),
-            new Day7(),
-            new Day8(),
-            new Day9()
+        new Day1(),
+        new Day2(),
+        new Day3(),
+        new Day4(),
+        new Day5(),
+        new Day6(),
+        new Day7(),
+        new Day8(),
+        new Day9()
     };
 
     public static void main(String[] args) {
@@ -26,9 +26,7 @@ public class Main {
     }
 
     private static void solveAll() {
-        Arrays.stream(EXERCISES).forEach(
-                Main::solve
-        );
+        Arrays.stream(EXERCISES).forEach(Main::solve);
     }
 
     private static void solve(AdventOfCodeDailyExercise exercise) {

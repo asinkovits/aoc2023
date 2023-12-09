@@ -17,13 +17,17 @@ public class LineProcessor<T> {
     private final T context;
 
     @SneakyThrows(IOException.class)
-    public T processLines(TriConsumer<Integer,  String, T> processor) {
-        try(InputStreamReader isr = new InputStreamReader(Objects
-                .requireNonNull(getClass().getClassLoader().getResourceAsStream(path.toString())));
-            BufferedReader br = new BufferedReader(isr)) {
+    public T processLines(TriConsumer<Integer, String, T> processor) {
+        try (InputStreamReader isr =
+                        new InputStreamReader(
+                                Objects.requireNonNull(
+                                        getClass()
+                                                .getClassLoader()
+                                                .getResourceAsStream(path.toString())));
+                BufferedReader br = new BufferedReader(isr)) {
             String line;
             int i = 0;
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 processor.accept(i++, line, context);
             }
         }

@@ -36,7 +36,9 @@ public class Day6 extends AbstractDay<Context> {
     @Override
     protected void parseSecond(Integer lineNumber, String line, Context context) {
         String[] split = line.split(":");
-        List<Long> longs = ParsingUtil.parseNumbers(split[1].trim().replaceAll(StringUtils.SPACE, StringUtils.EMPTY));
+        List<Long> longs =
+                ParsingUtil.parseNumbers(
+                        split[1].trim().replaceAll(StringUtils.SPACE, StringUtils.EMPTY));
         if (lineNumber == 0) {
             context.setTimes(longs);
         } else {
@@ -66,8 +68,8 @@ public class Day6 extends AbstractDay<Context> {
         double a = 1.0;
         double b = -timeDistancePair.getLeft();
         double c = timeDistancePair.getRight();
-        double x1 =  ((-1 * b) + Math.sqrt((b * b) - (4*a*c))) / (2 * a);
-        //double x2 =  ((-1 * b) - Math.sqrt((b * b) - (4*a*c))) / (2 * a);
+        double x1 = ((-1 * b) + Math.sqrt((b * b) - (4 * a * c))) / (2 * a);
+        // double x2 =  ((-1 * b) - Math.sqrt((b * b) - (4*a*c))) / (2 * a);
         double x2 = timeDistancePair.getLeft() - x1;
         return 1L + ((long) Math.floor(x1) - (long) Math.ceil(x2));
     }

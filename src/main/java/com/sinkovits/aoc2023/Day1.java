@@ -35,9 +35,16 @@ public class Day1 extends AbstractDay<CountingContext> {
         return context.getSum();
     }
 
-
     private enum Numbers {
-        ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9);
+        ONE(1),
+        TWO(2),
+        THREE(3),
+        FOUR(4),
+        FIVE(5),
+        SIX(6),
+        SEVEN(7),
+        EIGHT(8),
+        NINE(9);
         final int value;
 
         Numbers(int value) {
@@ -90,10 +97,6 @@ public class Day1 extends AbstractDay<CountingContext> {
                 }
             }
         }
-        return Pair.of(
-                NumberPosition.of(first, firstPos),
-                NumberPosition.of(last, lastPos)
-        );
+        return Pair.of(NumberPosition.of(first, firstPos), NumberPosition.of(last, lastPos));
     }
 }
-

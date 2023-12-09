@@ -11,15 +11,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-
 @Slf4j
 public class Day2 extends AbstractDay<CountingContext> {
 
-    private static final SetOfCubes SOLUTION_1_CONSTRAINTS = SetOfCubes.of(
-            ColorAndNumber.of(Color.RED, 12),
-            ColorAndNumber.of(Color.GREEN, 13),
-            ColorAndNumber.of(Color.BLUE, 14)
-    );
+    private static final SetOfCubes SOLUTION_1_CONSTRAINTS =
+            SetOfCubes.of(
+                    ColorAndNumber.of(Color.RED, 12),
+                    ColorAndNumber.of(Color.GREEN, 13),
+                    ColorAndNumber.of(Color.BLUE, 14));
 
     public Day2() {
         super("input_day2", CountingContext.class);
@@ -51,15 +50,17 @@ public class Day2 extends AbstractDay<CountingContext> {
     }
 
     private enum Color {
-        RED, BLUE, GREEN
+        RED,
+        BLUE,
+        GREEN
     }
 
     private record ColorAndNumber(Color color, int number) implements Comparable<ColorAndNumber> {
         static final ColorAndNumber EMPTY_RED = ColorAndNumber.of(Color.RED, 0);
         static final ColorAndNumber EMPTY_GREEN = ColorAndNumber.of(Color.GREEN, 0);
         static final ColorAndNumber EMPTY_BLUE = ColorAndNumber.of(Color.BLUE, 0);
-        static final Comparator<ColorAndNumber> COMPARATOR = Comparator
-                .comparingInt(ColorAndNumber::number);
+        static final Comparator<ColorAndNumber> COMPARATOR =
+                Comparator.comparingInt(ColorAndNumber::number);
 
         static ColorAndNumber of(Color color, int number) {
             return new ColorAndNumber(color, number);
@@ -72,30 +73,19 @@ public class Day2 extends AbstractDay<CountingContext> {
 
         @Override
         public int compareTo(ColorAndNumber o) {
-            return COMPARATOR
-                    .compare(this, o);
+            return COMPARATOR.compare(this, o);
         }
     }
 
     @Builder
     @RequiredArgsConstructor
     private static class SetOfCubes {
-        @NonNull
-        @Builder.Default
-        private final ColorAndNumber reds = ColorAndNumber.EMPTY_RED;
-        @NonNull
-        @Builder.Default
-        private final ColorAndNumber greens = ColorAndNumber.EMPTY_BLUE;
-        @NonNull
-        @Builder.Default
-        private final ColorAndNumber blues = ColorAndNumber.EMPTY_GREEN;
+        @NonNull @Builder.Default private final ColorAndNumber reds = ColorAndNumber.EMPTY_RED;
+        @NonNull @Builder.Default private final ColorAndNumber greens = ColorAndNumber.EMPTY_BLUE;
+        @NonNull @Builder.Default private final ColorAndNumber blues = ColorAndNumber.EMPTY_GREEN;
 
         static SetOfCubes of(ColorAndNumber reds, ColorAndNumber greens, ColorAndNumber blues) {
-            return SetOfCubes.builder()
-                    .reds(reds)
-                    .greens(greens)
-                    .blues(blues)
-                    .build();
+            return SetOfCubes.builder().reds(reds).greens(greens).blues(blues).build();
         }
 
         static SetOfCubes parse(String input) {
@@ -113,9 +103,9 @@ public class Day2 extends AbstractDay<CountingContext> {
         }
 
         public boolean isValid(SetOfCubes constraints) {
-            return reds.compareTo(constraints.reds) <= 0 &&
-                    greens.compareTo(constraints.greens) <= 0 &&
-                    blues.compareTo(constraints.blues) <= 0;
+            return reds.compareTo(constraints.reds) <= 0
+                    && greens.compareTo(constraints.greens) <= 0
+                    && blues.compareTo(constraints.blues) <= 0;
         }
 
         int power() {
@@ -126,44 +116,34 @@ public class Day2 extends AbstractDay<CountingContext> {
     @Builder
     private record Game(int id, List<SetOfCubes> sets) {
         static Game parse(String line) {
-            //Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+            // Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
             Game.GameBuilder builder = Game.builder();
             String[] gameAndSets = line.split(":");
             builder.id(Integer.parseInt(gameAndSets[0].split(StringUtils.SPACE)[1]));
             String[] sets = gameAndSets[1].split(";");
-            builder.sets(Arrays.stream(sets)
-                    .map(SetOfCubes::parse)
-                    .toList());
+            builder.sets(Arrays.stream(sets).map(SetOfCubes::parse).toList());
             return builder.build();
         }
 
         public boolean isValid(SetOfCubes constraints) {
-            return sets
-                    .stream()
-                    .allMatch(set -> set.isValid(constraints));
+            return sets.stream().allMatch(set -> set.isValid(constraints));
         }
 
         SetOfCubes fewestNumberCubesRequired() {
-            Optional<ColorAndNumber> red = sets
-                    .stream()
-                    .map(setOfCubes -> setOfCubes.reds)
-                    .max(ColorAndNumber::compareTo);
+            Optional<ColorAndNumber> red =
+                    sets.stream().map(setOfCubes -> setOfCubes.reds).max(ColorAndNumber::compareTo);
 
-            Optional<ColorAndNumber> green = sets
-                    .stream()
-                    .map(setOfCubes -> setOfCubes.greens)
-                    .max(ColorAndNumber::compareTo);
+            Optional<ColorAndNumber> green =
+                    sets.stream()
+                            .map(setOfCubes -> setOfCubes.greens)
+                            .max(ColorAndNumber::compareTo);
 
-            Optional<ColorAndNumber> blue = sets
-                    .stream()
-                    .map(setOfCubes -> setOfCubes.blues)
-                    .max(ColorAndNumber::compareTo);
+            Optional<ColorAndNumber> blue =
+                    sets.stream()
+                            .map(setOfCubes -> setOfCubes.blues)
+                            .max(ColorAndNumber::compareTo);
 
-            return SetOfCubes.of(
-                   red.orElseThrow(),
-                   green.orElseThrow(),
-                   blue.orElseThrow()
-            );
+            return SetOfCubes.of(red.orElseThrow(), green.orElseThrow(), blue.orElseThrow());
         }
     }
 }

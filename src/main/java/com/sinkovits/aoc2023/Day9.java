@@ -10,7 +10,6 @@ import java.util.List;
 
 import static com.sinkovits.aoc2023.Day9.Context;
 
-
 @Slf4j
 public class Day9 extends AbstractDay<Context> {
 
@@ -30,9 +29,7 @@ public class Day9 extends AbstractDay<Context> {
 
     @Override
     protected long calculateFirst(Context context) {
-        return context.data.stream()
-                .mapToLong(this::predictNextValue)
-                .sum();
+        return context.data.stream().mapToLong(this::predictNextValue).sum();
     }
 
     @Override
@@ -42,10 +39,7 @@ public class Day9 extends AbstractDay<Context> {
 
     @Override
     protected long calculateSecond(Context context) {
-        return context.data.stream()
-                .map(this::reverse)
-                .mapToLong(this::predictNextValue)
-                .sum();
+        return context.data.stream().map(this::reverse).mapToLong(this::predictNextValue).sum();
     }
 
     private long predictNextValue(List<Long> measurementValues) {
@@ -65,10 +59,7 @@ public class Day9 extends AbstractDay<Context> {
                 currentSequence = newSequence;
             }
         }
-        return lastValues
-                .stream()
-                .mapToLong(Long::longValue)
-                .sum();
+        return lastValues.stream().mapToLong(Long::longValue).sum();
     }
 
     private List<Long> reverse(List<Long> measurementValues) {

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import static com.sinkovits.aoc2023.Day8.Context;
 
-
 @Slf4j
 public class Day8 extends AbstractDay<Context> {
 
@@ -23,10 +22,11 @@ public class Day8 extends AbstractDay<Context> {
 
     @Override
     protected long calculateFirst(Context context) {
-        Node start = context.nodeLookup.values().stream()
-                .filter(node -> node.name.equals("AAA"))
-                .findFirst()
-                .orElseThrow();
+        Node start =
+                context.nodeLookup.values().stream()
+                        .filter(node -> node.name.equals("AAA"))
+                        .findFirst()
+                        .orElseThrow();
         return calculateIterationsRequired(context, start, "ZZZ") * context.instructions.length();
     }
 
@@ -37,12 +37,11 @@ public class Day8 extends AbstractDay<Context> {
 
     @Override
     protected long calculateSecond(Context context) {
-        long iterationsRequired = context.nodeLookup
-                .values()
-                .stream()
-                .filter(node -> node.name.matches("..A"))
-                .map(node -> calculateIterationsRequired(context, node, "..Z"))
-                .reduce(1L, (a, b) -> a * b);
+        long iterationsRequired =
+                context.nodeLookup.values().stream()
+                        .filter(node -> node.name.matches("..A"))
+                        .map(node -> calculateIterationsRequired(context, node, "..Z"))
+                        .reduce(1L, (a, b) -> a * b);
 
         return iterationsRequired * context.instructions.length();
     }
@@ -75,7 +74,8 @@ public class Day8 extends AbstractDay<Context> {
         }
     }
 
-    private long calculateIterationsRequired(Context context, Node startNode, String endNodePattern) {
+    private long calculateIterationsRequired(
+            Context context, Node startNode, String endNodePattern) {
         char[] charArray = context.instructions.toCharArray();
         Node currentNode = startNode;
         for (long i = 1; ; i++) {

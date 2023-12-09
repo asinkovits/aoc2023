@@ -22,12 +22,16 @@ public class Day3 extends AbstractDay<Context> {
     @Override
     protected void parseFirst(Integer lineNumber, String line, Context context) {
         parseLine(lineNumber, line, context);
-        context.symbols.forEach(symbol -> {
-            List<PotentialPartNumber> adjacentPartNumbers = context.potentialPartNumbers.stream().filter(ppn -> isAdjacent(ppn, symbol.coordinate)).toList();
-            int sum = adjacentPartNumbers.stream().mapToInt(ppn -> ppn.partNumber).sum();
-            context.sum += sum;
-            context.potentialPartNumbers.removeAll(adjacentPartNumbers);
-        });
+        context.symbols.forEach(
+                symbol -> {
+                    List<PotentialPartNumber> adjacentPartNumbers =
+                            context.potentialPartNumbers.stream()
+                                    .filter(ppn -> isAdjacent(ppn, symbol.coordinate))
+                                    .toList();
+                    int sum = adjacentPartNumbers.stream().mapToInt(ppn -> ppn.partNumber).sum();
+                    context.sum += sum;
+                    context.potentialPartNumbers.removeAll(adjacentPartNumbers);
+                });
     }
 
     @Override
@@ -38,14 +42,21 @@ public class Day3 extends AbstractDay<Context> {
     @Override
     protected void parseSecond(Integer lineNumber, String line, Context context) {
         parseLine(lineNumber, line, context);
-        context.symbols.stream().filter(symbol -> symbol.symbol == Symbol.GEAR)
-                .forEach(symbol -> {
-                    List<PotentialPartNumber> adjacentPartNumbers = context.potentialPartNumbers.stream().filter(ppn -> isAdjacent(ppn, symbol.coordinate)).toList();
-                    if (adjacentPartNumbers.size() == 2) {
-                        context.sum += adjacentPartNumbers.get(0).partNumber * adjacentPartNumbers.get(1).partNumber;
-                        context.potentialPartNumbers.removeAll(adjacentPartNumbers);
-                    }
-                });
+        context.symbols.stream()
+                .filter(symbol -> symbol.symbol == Symbol.GEAR)
+                .forEach(
+                        symbol -> {
+                            List<PotentialPartNumber> adjacentPartNumbers =
+                                    context.potentialPartNumbers.stream()
+                                            .filter(ppn -> isAdjacent(ppn, symbol.coordinate))
+                                            .toList();
+                            if (adjacentPartNumbers.size() == 2) {
+                                context.sum +=
+                                        adjacentPartNumbers.get(0).partNumber
+                                                * adjacentPartNumbers.get(1).partNumber;
+                                context.potentialPartNumbers.removeAll(adjacentPartNumbers);
+                            }
+                        });
     }
 
     @Override
@@ -96,8 +107,9 @@ public class Day3 extends AbstractDay<Context> {
         private Coordinate start;
 
         public Optional<PotentialPartNumber> finish() {
-            if(start != null) {
-                Optional<PotentialPartNumber> result = Optional.of(new PotentialPartNumber(value, start));
+            if (start != null) {
+                Optional<PotentialPartNumber> result =
+                        Optional.of(new PotentialPartNumber(value, start));
                 value = 0;
                 start = null;
                 return result;
@@ -106,7 +118,7 @@ public class Day3 extends AbstractDay<Context> {
         }
 
         public void addDigit(char digit, int columnNumber, int lineNumber) {
-            if(start == null) {
+            if (start == null) {
                 start = new Coordinate(columnNumber, lineNumber);
             }
             value = (value * RADIX) + Character.digit(digit, RADIX);
@@ -114,15 +126,21 @@ public class Day3 extends AbstractDay<Context> {
     }
 
     static class AdjacencyCalculator {
-        static boolean isAdjacent(PotentialPartNumber potentialPartNumber, Coordinate symbolCoordinate) {
+        static boolean isAdjacent(
+                PotentialPartNumber potentialPartNumber, Coordinate symbolCoordinate) {
             int numberOfDigits = String.valueOf(potentialPartNumber.partNumber).length();
-            return potentialPartNumber.start.lineNumber == symbolCoordinate.lineNumber &&
-                    (potentialPartNumber.start.columnNumber - 1 == symbolCoordinate.columnNumber ||
-                            potentialPartNumber.start.columnNumber + numberOfDigits == symbolCoordinate.columnNumber) ||
-                    (potentialPartNumber.start.lineNumber == symbolCoordinate.lineNumber - 1 ||
-                            potentialPartNumber.start.lineNumber == symbolCoordinate.lineNumber + 1) &&
-                            symbolCoordinate.columnNumber >= potentialPartNumber.start.columnNumber - 1 &&
-                            symbolCoordinate.columnNumber <= potentialPartNumber.start.columnNumber + numberOfDigits;
+            return potentialPartNumber.start.lineNumber == symbolCoordinate.lineNumber
+                            && (potentialPartNumber.start.columnNumber - 1
+                                            == symbolCoordinate.columnNumber
+                                    || potentialPartNumber.start.columnNumber + numberOfDigits
+                                            == symbolCoordinate.columnNumber)
+                    || (potentialPartNumber.start.lineNumber == symbolCoordinate.lineNumber - 1
+                                    || potentialPartNumber.start.lineNumber
+                                            == symbolCoordinate.lineNumber + 1)
+                            && symbolCoordinate.columnNumber
+                                    >= potentialPartNumber.start.columnNumber - 1
+                            && symbolCoordinate.columnNumber
+                                    <= potentialPartNumber.start.columnNumber + numberOfDigits;
         }
     }
 

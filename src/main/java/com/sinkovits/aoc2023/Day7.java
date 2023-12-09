@@ -49,7 +49,20 @@ public class Day7 extends AbstractDay<Context> {
     }
 
     private enum Card {
-        JOKER("G"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"), NINE("9"), TEN("T"), JACK("J"), QUEEN("Q"), KING("K"), ACE("A");
+        JOKER("G"),
+        TWO("2"),
+        THREE("3"),
+        FOUR("4"),
+        FIVE("5"),
+        SIX("6"),
+        SEVEN("7"),
+        EIGHT("8"),
+        NINE("9"),
+        TEN("T"),
+        JACK("J"),
+        QUEEN("Q"),
+        KING("K"),
+        ACE("A");
 
         private final String code;
 
@@ -72,8 +85,7 @@ public class Day7 extends AbstractDay<Context> {
         private final EnumMap<Card, Integer> cards = new EnumMap<>(Card.class);
         private final Card[] cardArray = new Card[5];
 
-        @Getter
-        private HandType type;
+        @Getter private HandType type;
 
         public Hand(String hand) {
             char[] cardCodes = hand.toCharArray();
@@ -88,7 +100,7 @@ public class Day7 extends AbstractDay<Context> {
 
         private void applyJokers() {
             Integer jokerCount = cards.getOrDefault(Card.JOKER, 0);
-            if(jokerCount == 5) {
+            if (jokerCount == 5) {
                 type = HandType.FIVE_OF_A_KIND;
                 return;
             }
@@ -143,7 +155,9 @@ public class Day7 extends AbstractDay<Context> {
                 return compareByHandType;
             }
             for (int i = 0; i < cardArray.length; i++) {
-                int compareByCard = Comparator.comparing(Card::ordinal).compare(cardArray[i], other.cardArray[i]);
+                int compareByCard =
+                        Comparator.comparing(Card::ordinal)
+                                .compare(cardArray[i], other.cardArray[i]);
                 if (compareByCard != 0) {
                     return compareByCard;
                 }
@@ -153,7 +167,13 @@ public class Day7 extends AbstractDay<Context> {
     }
 
     private enum HandType {
-        HIGH_CARD, ONE_PAIR, TWO_PAIRS, THREE_OF_A_KIND, FULL_HOUSE, FOUR_OF_A_KIND, FIVE_OF_A_KIND
+        HIGH_CARD,
+        ONE_PAIR,
+        TWO_PAIRS,
+        THREE_OF_A_KIND,
+        FULL_HOUSE,
+        FOUR_OF_A_KIND,
+        FIVE_OF_A_KIND
     }
 
     protected static class Context {

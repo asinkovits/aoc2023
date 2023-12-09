@@ -36,62 +36,24 @@ class Day3Test {
     static Stream<Arguments> provideCoordinatesForAdjTest() {
         return Stream.of(
                 //
-                Arguments.of(
-                        PotentialPartNumber.of(123, 0, 0),
-                        Coordinate.of(3, 0), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 0, 0),
-                        Coordinate.of(4, 0), false),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 1, 0),
-                        Coordinate.of(0, 0), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(0, 0), false),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(0, 1), false),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(1, 1), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(2, 1), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(3, 1), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(4, 1), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(5, 1), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 0),
-                        Coordinate.of(6, 1), false),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 1),
-                        Coordinate.of(0, 0), false),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 1),
-                        Coordinate.of(1, 0), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 1),
-                        Coordinate.of(2, 0), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 1),
-                        Coordinate.of(3, 0), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 1),
-                        Coordinate.of(4, 0), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 1),
-                        Coordinate.of(5, 0), true),
-                Arguments.of(
-                        PotentialPartNumber.of(123, 2, 1),
-                        Coordinate.of(6, 0), false)
-
-        );
+                Arguments.of(PotentialPartNumber.of(123, 0, 0), Coordinate.of(3, 0), true),
+                Arguments.of(PotentialPartNumber.of(123, 0, 0), Coordinate.of(4, 0), false),
+                Arguments.of(PotentialPartNumber.of(123, 1, 0), Coordinate.of(0, 0), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(0, 0), false),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(0, 1), false),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(1, 1), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(2, 1), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(3, 1), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(4, 1), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(5, 1), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 0), Coordinate.of(6, 1), false),
+                Arguments.of(PotentialPartNumber.of(123, 2, 1), Coordinate.of(0, 0), false),
+                Arguments.of(PotentialPartNumber.of(123, 2, 1), Coordinate.of(1, 0), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 1), Coordinate.of(2, 0), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 1), Coordinate.of(3, 0), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 1), Coordinate.of(4, 0), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 1), Coordinate.of(5, 0), true),
+                Arguments.of(PotentialPartNumber.of(123, 2, 1), Coordinate.of(6, 0), false));
     }
 
     @ParameterizedTest
@@ -99,5 +61,4 @@ class Day3Test {
     void adj(PotentialPartNumber ppn, Coordinate s, boolean expected) {
         assertEquals(expected, Day3.AdjacencyCalculator.isAdjacent(ppn, s));
     }
-
 }

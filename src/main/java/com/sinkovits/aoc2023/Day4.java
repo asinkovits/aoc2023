@@ -24,10 +24,7 @@ public class Day4 extends AbstractDay<Context> {
         String[] split1 = split[1].split("\\|");
         List<Long> winingNumbers = parseNumbers(split1[0].trim());
         List<Long> ownNumbers = parseNumbers(split1[1].trim());
-        long count = ownNumbers.stream()
-                .distinct()
-                .filter(winingNumbers::contains)
-                .count();
+        long count = ownNumbers.stream().distinct().filter(winingNumbers::contains).count();
         if (count == 1) {
             context.add(1);
         } else if (count > 1) {
@@ -47,9 +44,7 @@ public class Day4 extends AbstractDay<Context> {
         String[] split1 = split[1].split("\\|");
         List<Long> winingNumbers = parseNumbers(split1[0].trim());
         List<Long> ownNumbers = parseNumbers(split1[1].trim());
-        long count = ownNumbers.stream()
-                .filter(winingNumbers::contains)
-                .count();
+        long count = ownNumbers.stream().filter(winingNumbers::contains).count();
         context.addWingNumbersByCardId(cardId, count);
     }
 
