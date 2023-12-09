@@ -1,6 +1,7 @@
 package com.sinkovits.aoc2023;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 public class ParsingUtil {
 
     private static final int RADIX = 10;
+    private static final String NON_NUMERIC_REGEX = "[^0-9]";
 
     public static List<Long> parseNumbers(String input) {
         char previous = 0;
@@ -31,5 +33,9 @@ public class ParsingUtil {
         }
         result.add(value);
         return result;
+    }
+
+    public static String removeNonNumeric(String input) {
+        return input.replaceAll(NON_NUMERIC_REGEX, StringUtils.EMPTY);
     }
 }

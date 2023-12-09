@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -14,13 +13,42 @@ import java.util.Optional;
 
 
 @Slf4j
-public class Day2 implements AdventOfCodeDailyExercise {
+public class Day2 extends AbstractDay<CountingContext> {
 
     private static final SetOfCubes SOLUTION_1_CONSTRAINTS = SetOfCubes.of(
             ColorAndNumber.of(Color.RED, 12),
             ColorAndNumber.of(Color.GREEN, 13),
             ColorAndNumber.of(Color.BLUE, 14)
     );
+
+    public Day2() {
+        super("input_day2", CountingContext.class);
+    }
+
+    @Override
+    protected void parseFirst(Integer lineNumber, String line, CountingContext context) {
+        Game game = Game.parse(line);
+        if (game.isValid(SOLUTION_1_CONSTRAINTS)) {
+            context.add(game.id());
+        }
+    }
+
+    @Override
+    protected long calculateFirst(CountingContext context) {
+        return context.getSum();
+    }
+
+    @Override
+    protected void parseSecond(Integer lineNumber, String line, CountingContext context) {
+        Game game = Game.parse(line);
+        SetOfCubes fewestNumberCubesRequired = game.fewestNumberCubesRequired();
+        context.add(fewestNumberCubesRequired.power());
+    }
+
+    @Override
+    protected long calculateSecond(CountingContext context) {
+        return context.getSum();
+    }
 
     private enum Color {
         RED, BLUE, GREEN
@@ -137,41 +165,5 @@ public class Day2 implements AdventOfCodeDailyExercise {
                    blue.orElseThrow()
             );
         }
-    }
-
-    private void processLineSolution1(int lineNumber, String line, CountingContext context) {
-        Game game = Game.parse(line);
-        if (game.isValid(SOLUTION_1_CONSTRAINTS)) {
-            context.add(game.id());
-        }
-    }
-
-    private void processLineSolution2(int lineNumber, String line, CountingContext context) {
-        Game game = Game.parse(line);
-        SetOfCubes fewestNumberCubesRequired = game.fewestNumberCubesRequired();
-        context.add(fewestNumberCubesRequired.power());
-    }
-
-    @Override
-    public long solveFirst() {
-        LineProcessor<CountingContext> lineProcessor = getDay2ContextLineReader();
-        CountingContext context = lineProcessor.processLines(this::processLineSolution1);
-        log.info("Solution for the first exercise: {}", context.getSum());
-        return context.getSum();
-    }
-
-    @Override
-    public long solveSecond() {
-        LineProcessor<CountingContext> lineProcessor = getDay2ContextLineReader();
-        CountingContext context = lineProcessor.processLines(this::processLineSolution2);
-        log.info("Solution for the second exercise: {}", context.getSum());
-        return context.getSum();
-    }
-
-    private static LineProcessor<CountingContext> getDay2ContextLineReader() {
-        return new LineProcessor<>(
-                Path.of("input_day2"),
-                new CountingContext()
-        );
     }
 }

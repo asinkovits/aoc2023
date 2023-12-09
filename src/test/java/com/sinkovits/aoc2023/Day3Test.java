@@ -7,29 +7,30 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.sinkovits.aoc2023.Day3.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.sinkovits.aoc2023.Day3.Coordinate;
+import static com.sinkovits.aoc2023.Day3.PotentialPartNumber;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Day3Test {
 
-    Day3 day3 = new Day3();
+    private final Day3 underTest = new Day3();
 
     @Test
     void solveFirst() {
         // When
-        long result = day3.solveFirst();
+        long result = underTest.solveFirst();
 
         // Then
-        assertEquals(527364, result);
+        assertEquals(527364L, result);
     }
 
     @Test
     void solveSecond() {
         // When
-        long result = day3.solveSecond();
+        long result = underTest.solveSecond();
 
         // Then
-        assertEquals(79026871, result);
+        assertEquals(79026871L, result);
     }
 
     static Stream<Arguments> provideCoordinatesForAdjTest() {

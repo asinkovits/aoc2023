@@ -3,28 +3,28 @@ package com.sinkovits.aoc2023;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Day5Test {
 
-    Day5 day5 = new Day5();
+    private final Day5 underTest = new Day5();
 
     @Test
     void solveFirst() {
         // When
-        long result = day5.solveFirst();
+        long result = underTest.solveFirst();
 
         // Then
-        assertEquals(313045984, result);
+        assertEquals(313045984L, result);
     }
 
     @Test
     @Disabled
     void solveSecond() {
         // When
-        long result = day5.solveSecond();
+        long result = underTest.solveSecond();
 
         // Then
-        assertEquals(20283860, result);
+        assertEquals(20283860L, result);
     }
 }

@@ -4,16 +4,57 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
-import static com.sinkovits.aoc2023.Day3.AdjacencyCalculator.*;
+import static com.sinkovits.aoc2023.Day3.AdjacencyCalculator.isAdjacent;
+import static com.sinkovits.aoc2023.Day3.Context;
 
 @Slf4j
-public class Day3 implements AdventOfCodeDailyExercise {
+public class Day3 extends AbstractDay<Context> {
+
+    public Day3() {
+        super("input_day3", Context.class);
+    }
+
+    @Override
+    protected void parseFirst(Integer lineNumber, String line, Context context) {
+        parseLine(lineNumber, line, context);
+        context.symbols.forEach(symbol -> {
+            List<PotentialPartNumber> adjacentPartNumbers = context.potentialPartNumbers.stream().filter(ppn -> isAdjacent(ppn, symbol.coordinate)).toList();
+            int sum = adjacentPartNumbers.stream().mapToInt(ppn -> ppn.partNumber).sum();
+            context.sum += sum;
+            context.potentialPartNumbers.removeAll(adjacentPartNumbers);
+        });
+    }
+
+    @Override
+    protected long calculateFirst(Context context) {
+        return context.getSum();
+    }
+
+    @Override
+    protected void parseSecond(Integer lineNumber, String line, Context context) {
+        parseLine(lineNumber, line, context);
+        context.symbols.stream().filter(symbol -> symbol.symbol == Symbol.GEAR)
+                .forEach(symbol -> {
+                    List<PotentialPartNumber> adjacentPartNumbers = context.potentialPartNumbers.stream().filter(ppn -> isAdjacent(ppn, symbol.coordinate)).toList();
+                    if (adjacentPartNumbers.size() == 2) {
+                        context.sum += adjacentPartNumbers.get(0).partNumber * adjacentPartNumbers.get(1).partNumber;
+                        context.potentialPartNumbers.removeAll(adjacentPartNumbers);
+                    }
+                });
+    }
+
+    @Override
+    protected long calculateSecond(Context context) {
+        return context.getSum();
+    }
 
     @Getter
-    static final class Day3Context {
+    protected static final class Context {
         private final List<PotentialPartNumber> potentialPartNumbers = new LinkedList<>();
         private final List<Symbol> symbols = new ArrayList<>();
         private int sum = 0;
@@ -27,13 +68,13 @@ public class Day3 implements AdventOfCodeDailyExercise {
         }
     }
 
-    record Coordinate(int columnNumber, int lineNumber) {
+    protected record Coordinate(int columnNumber, int lineNumber) {
         public static Coordinate of(int columnNumber, int lineNumber) {
             return new Coordinate(columnNumber, lineNumber);
         }
     }
 
-    record Symbol(char symbol, Coordinate coordinate) {
+    protected record Symbol(char symbol, Coordinate coordinate) {
         public static final char GEAR = '*';
 
         public static Symbol of(char symbol, int columnNumber, int lineNumber) {
@@ -41,7 +82,7 @@ public class Day3 implements AdventOfCodeDailyExercise {
         }
     }
 
-    record PotentialPartNumber(int partNumber, Coordinate start) {
+    protected record PotentialPartNumber(int partNumber, Coordinate start) {
         public static PotentialPartNumber of(int partNumber, int columnNumber, int lineNumber) {
             return new PotentialPartNumber(partNumber, new Coordinate(columnNumber, lineNumber));
         }
@@ -72,9 +113,8 @@ public class Day3 implements AdventOfCodeDailyExercise {
         }
     }
 
-    // Simplified AdjacencyCalculator
-    public static class AdjacencyCalculator {
-        public static boolean isAdjacent(PotentialPartNumber potentialPartNumber, Coordinate symbolCoordinate) {
+    static class AdjacencyCalculator {
+        static boolean isAdjacent(PotentialPartNumber potentialPartNumber, Coordinate symbolCoordinate) {
             int numberOfDigits = String.valueOf(potentialPartNumber.partNumber).length();
             return potentialPartNumber.start.lineNumber == symbolCoordinate.lineNumber &&
                     (potentialPartNumber.start.columnNumber - 1 == symbolCoordinate.columnNumber ||
@@ -86,29 +126,7 @@ public class Day3 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private void processLineSolution1(int lineNumber, String line, Day3Context context) {
-        parseLine(lineNumber, line, context);
-        context.symbols.forEach(symbol -> {
-            List<PotentialPartNumber> adjacentPartNumbers = context.potentialPartNumbers.stream().filter(ppn -> isAdjacent(ppn, symbol.coordinate)).toList();
-            int sum = adjacentPartNumbers.stream().mapToInt(ppn -> ppn.partNumber).sum();
-            context.sum += sum;
-            context.potentialPartNumbers.removeAll(adjacentPartNumbers);
-        });
-    }
-
-    private void processLineSolution2(int lineNumber, String line, Day3Context context) {
-        parseLine(lineNumber, line, context);
-        context.symbols.stream().filter(symbol -> symbol.symbol == Symbol.GEAR)
-                .forEach(symbol -> {
-                    List<PotentialPartNumber> adjacentPartNumbers = context.potentialPartNumbers.stream().filter(ppn -> isAdjacent(ppn, symbol.coordinate)).toList();
-                    if (adjacentPartNumbers.size() == 2) {
-                        context.sum += adjacentPartNumbers.get(0).partNumber * adjacentPartNumbers.get(1).partNumber;
-                        context.potentialPartNumbers.removeAll(adjacentPartNumbers);
-                    }
-                });
-    }
-
-    private static void parseLine(int lineNumber, String line, Day3Context context) {
+    private static void parseLine(int lineNumber, String line, Context context) {
         PotentialPartNumberParser potentialPartNumberParser = new PotentialPartNumberParser();
         char[] chars = line.toCharArray();
         for (int i = 0; i < chars.length; i++) {
@@ -122,28 +140,5 @@ public class Day3 implements AdventOfCodeDailyExercise {
             }
         }
         potentialPartNumberParser.finish().ifPresent(context::addPotentialPartNumber);
-    }
-
-    @Override
-    public long solveFirst() {
-        LineProcessor<Day3Context> lineProcessor = getDay3ContextLineReader();
-        Day3Context context = lineProcessor.processLines(this::processLineSolution1);
-        log.info("Solution for the first exercise: {}", context.getSum());
-        return context.getSum();
-    }
-
-    @Override
-    public long solveSecond() {
-        LineProcessor<Day3Context> lineProcessor = getDay3ContextLineReader();
-        Day3Context context = lineProcessor.processLines(this::processLineSolution2);
-        log.info("Solution for the second exercise: {}", context.getSum());
-        return context.getSum();
-    }
-
-    private static LineProcessor<Day3Context> getDay3ContextLineReader() {
-        return new LineProcessor<>(
-                Path.of("input_day3"),
-                new Day3Context()
-        );
     }
 }

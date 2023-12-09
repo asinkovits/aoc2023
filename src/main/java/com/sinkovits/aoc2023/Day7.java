@@ -5,12 +5,48 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
+import static com.sinkovits.aoc2023.Day7.Context;
+
 @Slf4j
-public class Day7 implements AdventOfCodeDailyExercise {
+public class Day7 extends AbstractDay<Context> {
+
+    public Day7() {
+        super("input_day7", Context.class);
+    }
+
+    @Override
+    protected void parseFirst(Integer lineNumber, String line, Context context) {
+        String[] split = line.split(StringUtils.SPACE);
+        Hand hand = new Hand(split[0]);
+        long bid = Long.parseLong(split[1]);
+        context.addHand(hand);
+        context.addBid(hand, bid);
+    }
+
+    @Override
+    protected long calculateFirst(Context context) {
+        return calculateResult(context);
+    }
+
+    @Override
+    protected void parseSecond(Integer lineNumber, String line, Context context) {
+        String lineWithJokers = line.replaceAll(Card.JACK.code, Card.JOKER.code);
+        parseFirst(lineNumber, lineWithJokers, context);
+    }
+
+    @Override
+    protected long calculateSecond(Context context) {
+        return calculateResult(context);
+    }
 
     private enum Card {
         JOKER("G"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"), NINE("9"), TEN("T"), JACK("J"), QUEEN("Q"), KING("K"), ACE("A");
@@ -31,7 +67,7 @@ public class Day7 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private static class Hand {
+    protected static class Hand {
         UUID id = UUID.randomUUID();
         private final EnumMap<Card, Integer> cards = new EnumMap<>(Card.class);
         private final Card[] cardArray = new Card[5];
@@ -120,7 +156,7 @@ public class Day7 implements AdventOfCodeDailyExercise {
         HIGH_CARD, ONE_PAIR, TWO_PAIRS, THREE_OF_A_KIND, FULL_HOUSE, FOUR_OF_A_KIND, FIVE_OF_A_KIND
     }
 
-    private static class Context {
+    protected static class Context {
         List<Hand> hands = new ArrayList<>();
         Map<UUID, Long> bidByHandId = new HashMap<>();
 
@@ -137,38 +173,6 @@ public class Day7 implements AdventOfCodeDailyExercise {
         }
     }
 
-    @Override
-    public long solveFirst() {
-        LineProcessor<Context> lineProcessor = getContextLineReader();
-        Context context = lineProcessor.processLines(this::processLineSolution1);
-        long result = calculateResult(context);
-        log.info("Solution for the first exercise: {}", result);
-        return result;
-    }
-
-    @Override
-    public long solveSecond() {
-        LineProcessor<Context> lineProcessor = getContextLineReader();
-        Context context = lineProcessor.processLines(this::processLineSolution2);
-        long result = calculateResult(context);
-        log.info("Solution for the second exercise: {}", result);
-        return result;
-    }
-
-    private void processLineSolution1(Integer lineNumber, String line, Context context) {
-        String[] split = line.split(StringUtils.SPACE);
-        Hand hand = new Hand(split[0]);
-        long bid = Long.parseLong(split[1]);
-        context.addHand(hand);
-        context.addBid(hand, bid);
-    }
-
-    private void processLineSolution2(Integer lineNumber, String line, Context context) {
-        String lineWithJokers = line.replaceAll(Card.JACK.code, Card.JOKER.code);
-        processLineSolution1(lineNumber, lineWithJokers, context);
-    }
-
-
     private long calculateResult(Context context) {
         context.hands.sort(Hand::compare);
         return IntStream.range(0, context.hands.size())
@@ -176,12 +180,5 @@ public class Day7 implements AdventOfCodeDailyExercise {
                 .map(pair -> Pair.of(pair.getLeft(), context.getBid(pair.getRight())))
                 .mapToLong(pair -> pair.getLeft() * pair.getRight())
                 .sum();
-    }
-
-    private static LineProcessor<Context> getContextLineReader() {
-        return new LineProcessor<>(
-                Path.of("input_day7"),
-                new Context()
-        );
     }
 }

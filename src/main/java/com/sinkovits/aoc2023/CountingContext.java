@@ -3,10 +3,10 @@ package com.sinkovits.aoc2023;
 import lombok.Getter;
 
 @Getter
-class CountingContext {
-    private int sum = 0;
+public class CountingContext {
+    private long sum = 0;
 
-    public void add(int value) {
+    public void add(long value) {
         sum += value;
     }
 }

@@ -1,15 +1,40 @@
 package com.sinkovits.aoc2023;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.nio.file.Path;
+import static com.sinkovits.aoc2023.ParsingUtil.removeNonNumeric;
 
 @Slf4j
-public class Day1 implements AdventOfCodeDailyExercise {
+public class Day1 extends AbstractDay<CountingContext> {
 
-    public static final String NON_NUMERIC_REGEX = "[^0-9]";
+    public Day1() {
+        super("input_day1", CountingContext.class);
+    }
+
+    @Override
+    protected void parseFirst(Integer lineNumber, String line, CountingContext context) {
+        String replace = removeNonNumeric(line);
+        long calibrationValue = extractCalibrationValue(replace);
+        context.add(calibrationValue);
+    }
+
+    @Override
+    protected long calculateFirst(CountingContext context) {
+        return context.getSum();
+    }
+
+    @Override
+    protected void parseSecond(Integer lineNumber, String line, CountingContext context) {
+        String preprocessedInput = resolveFirstAndLastDigitsSpelledOutWithLetters(line);
+        parseFirst(lineNumber, preprocessedInput, context);
+    }
+
+    @Override
+    protected long calculateSecond(CountingContext context) {
+        return context.getSum();
+    }
+
 
     private enum Numbers {
         ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9);
@@ -27,17 +52,6 @@ public class Day1 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private void processLineSolution1(int lineNumber, String input, CountingContext context) {
-        String replace = removeNonNumeric(input);
-        int calibrationValue = extractCalibrationValue(replace);
-        context.add(calibrationValue);
-    }
-
-    private void processLineSolution2(int lineNumber, String input, CountingContext context) {
-        String preprocessedInput = resolveFirstAndLastDigitsSpelledOutWithLetters(input);
-        processLineSolution1(lineNumber, preprocessedInput, context);
-    }
-
     private String resolveFirstAndLastDigitsSpelledOutWithLetters(String input) {
         Pair<NumberPosition, NumberPosition> positions = findFirsAndLastPositions(input);
         StringBuilder sb = new StringBuilder(input);
@@ -50,13 +64,9 @@ public class Day1 implements AdventOfCodeDailyExercise {
         return sb.toString();
     }
 
-    private String removeNonNumeric(String input) {
-        return input.replaceAll(NON_NUMERIC_REGEX, StringUtils.EMPTY);
-    }
-
-    private static int extractCalibrationValue(String input) {
+    private static long extractCalibrationValue(String input) {
         String fn = String.format("%c%c", input.charAt(0), input.charAt(input.length() - 1));
-        return Integer.parseInt(fn);
+        return Long.parseLong(fn);
     }
 
     private Pair<NumberPosition, NumberPosition> findFirsAndLastPositions(String input) {
@@ -83,27 +93,6 @@ public class Day1 implements AdventOfCodeDailyExercise {
         return Pair.of(
                 NumberPosition.of(first, firstPos),
                 NumberPosition.of(last, lastPos)
-        );
-    }
-
-    public long solveFirst() {
-        LineProcessor<CountingContext> lineProcessor = getDay1ContextLineReader();
-        CountingContext context = lineProcessor.processLines(this::processLineSolution1);
-        log.info("Solution for the first exercise: {}", context.getSum());
-        return context.getSum();
-    }
-
-    public long solveSecond() {
-        LineProcessor<CountingContext> lineProcessor = getDay1ContextLineReader();
-        var context = lineProcessor.processLines(this::processLineSolution2);
-        log.info("Solution for the second exercise: {}", context.getSum());
-        return context.getSum();
-    }
-
-    private static LineProcessor<CountingContext> getDay1ContextLineReader() {
-        return new LineProcessor<>(
-                Path.of("input_day1"),
-                new CountingContext()
         );
     }
 }

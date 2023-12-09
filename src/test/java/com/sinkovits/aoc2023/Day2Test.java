@@ -2,16 +2,16 @@ package com.sinkovits.aoc2023;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Day2Test {
 
-    private final Day2 day2 = new Day2();
+    private final Day2 underTest = new Day2();
 
     @Test
     void solveFirst() {
         // When
-        long result = day2.solveFirst();
+        long result = underTest.solveFirst();
 
         // Then
         assertEquals(2076, result);
@@ -20,7 +20,7 @@ class Day2Test {
     @Test
     void solveSecond() {
         // When
-        long result = day2.solveSecond();
+        long result = underTest.solveSecond();
 
         // Then
         assertEquals(70950, result);

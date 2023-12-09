@@ -4,26 +4,61 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.LongStream;
 
+import static com.sinkovits.aoc2023.Day5.*;
 import static com.sinkovits.aoc2023.ParsingUtil.*;
 
 @Slf4j
-public class Day5 implements AdventOfCodeDailyExercise {
+public class Day5 extends AbstractDay<Context> {
 
     public static final String COLON = ":";
 
-    private record MappingRule(long destinationStart, long sourceStart, long length) {
+    public Day5() {
+        super("input_day5", Context.class);
+    }
 
+    @Override
+    protected void parseFirst(Integer lineNumber, String line, Context context) {
+        if (lineNumber == 0) {
+            context.setSeeds(parseSeeds1(line.split(COLON)[1].trim()));
+        } else {
+            parseLineCommon(line, context);
+        }
+    }
+
+    @Override
+    protected long calculateFirst(Context context) {
+        return calculateMinimumLocation(context.seeds, context.mappingRules);
+    }
+
+    @Override
+    protected void parseSecond(Integer lineNumber, String line, Context context) {
+        if (lineNumber == 0) {
+            context.setSeeds(parseSeeds2(line.split(COLON)[1].trim()));
+        } else {
+            parseLineCommon(line, context);
+        }
+    }
+
+    @Override
+    protected long calculateSecond(Context context) {
+        return calculateMinimumLocation(context.seeds, context.mappingRules);
+    }
+
+    protected record MappingRule(long destinationStart, long sourceStart, long length) {
         static MappingRule of(List<Long> input) {
             return new MappingRule(input.get(0), input.get(1), input.get(2));
         }
     }
 
     @Data
-    private static class Context {
+    protected static class Context {
         private MappingRuleType mappingRuleType = null;
         private LongStream seeds;
         private EnumMap<MappingRuleType, List<MappingRule>> mappingRules = new EnumMap<>(MappingRuleType.class);
@@ -35,7 +70,7 @@ public class Day5 implements AdventOfCodeDailyExercise {
         }
     }
 
-    private enum MappingRuleType {
+    protected enum MappingRuleType {
         S_TO_S("seed-to-soil map:"),
         S_TO_F("soil-to-fertilizer map:"),
         F_TO_W("fertilizer-to-water map:"),
@@ -48,48 +83,6 @@ public class Day5 implements AdventOfCodeDailyExercise {
 
         MappingRuleType(String command) {
             this.command = command;
-        }
-    }
-
-    @Override
-    public long solveFirst() {
-        LineProcessor<Context> lineProcessor = getContextLineReader();
-        Context context = lineProcessor.processLines(this::processLineSolution1);
-        long min = calculateMinimumLocation(context.seeds, context.mappingRules);
-        log.info("Solution for the first exercise: {}", min);
-        return (int) min;
-    }
-
-    @Override
-    public long solveSecond() {
-        LineProcessor<Context> lineProcessor = getContextLineReader();
-        Context context = lineProcessor.processLines(this::processLineSolution2);
-        long min = calculateMinimumLocation(context.seeds, context.mappingRules);
-        log.info("Solution for the second exercise: {}", min);
-        return (int) min;
-    }
-
-
-    private static LineProcessor<Context> getContextLineReader() {
-        return new LineProcessor<>(
-                Path.of("input_day5"),
-                new Context()
-        );
-    }
-
-    private void processLineSolution1(int lineNumber, String line, Context context) {
-        if (lineNumber == 0) {
-            context.setSeeds(parseSeeds1(line.split(COLON)[1].trim()));
-        } else {
-            parseLineCommon(line, context);
-        }
-    }
-
-    private void processLineSolution2(int lineNumber, String line, Context context) {
-        if (lineNumber == 0) {
-            context.setSeeds(parseSeeds2(line.split(COLON)[1].trim()));
-        } else {
-            parseLineCommon(line, context);
         }
     }
 

@@ -1,27 +1,26 @@
 package com.sinkovits.aoc2023;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Day8Test {
 
-    Day8 day = new Day8();
+    private final Day8 underTest = new Day8();
 
     @Test
     void solveFirst() {
         // When
-        long result = day.solveFirst();
+        long result = underTest.solveFirst();
 
         // Then
-        assertEquals(17621, result);
+        assertEquals(17621L, result);
     }
 
     @Test
     void solveSecond() {
         // When
-        long result = day.solveSecond();
+        long result = underTest.solveSecond();
 
         // Then
         assertEquals(20685524831999L, result);
