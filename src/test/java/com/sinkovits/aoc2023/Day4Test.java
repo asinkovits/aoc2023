@@ -1,6 +1,5 @@
 package com.sinkovits.aoc2023;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,7 +9,6 @@ class Day4Test {
     private final Day4 day4 = new Day4();
 
     @Test
-    @Disabled
     void solveFirst() {
         // When
         long result = day4.solveFirst();

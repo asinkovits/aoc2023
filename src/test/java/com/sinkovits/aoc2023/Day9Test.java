@@ -1,30 +1,28 @@
 package com.sinkovits.aoc2023;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Day5Test {
+class Day9Test {
 
-    Day5 day5 = new Day5();
+    Day9 day = new Day9();
 
     @Test
     void solveFirst() {
         // When
-        long result = day5.solveFirst();
+        long result = day.solveFirst();
 
         // Then
-        assertEquals(313045984, result);
+        assertEquals(1980437560L, result);
     }
 
     @Test
-    @Disabled
     void solveSecond() {
         // When
-        long result = day5.solveSecond();
+        long result = day.solveSecond();
 
         // Then
-        assertEquals(20283860, result);
+        assertEquals(977L, result);
     }
 }
