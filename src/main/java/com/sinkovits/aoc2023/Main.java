@@ -13,15 +13,21 @@ public class Main {
         new Day6(),
         new Day7(),
         new Day8(),
-        new Day9()
+        new Day9(),
+        new Day10(),
     };
 
     public static void main(String[] args) {
-        if (args.length < 1) {
-            solveAll();
-        } else {
-            int day = Integer.parseInt(args[0]);
-            solve(EXERCISES[day - 1]);
+        try {
+            if (args.length < 1) {
+                solveAll();
+            } else {
+                int day = Integer.parseInt(args[0]);
+                solve(EXERCISES[day - 1]);
+            }
+        } catch (Exception e) {
+            printUsage();
+            System.exit(1);
         }
     }
 
@@ -32,5 +38,12 @@ public class Main {
     private static void solve(AdventOfCodeDailyExercise exercise) {
         exercise.solveFirst();
         exercise.solveSecond();
+    }
+
+    private static void printUsage() {
+        System.out.println("Usage: java Main <day>");
+        System.out.println("<day> is the day of the Advent of Code exercise you want to solve.");
+        System.out.printf("It should be an integer between 1 and %d.\n", EXERCISES.length);
+        System.out.println("If no argument is provided, all exercises will be solved.");
     }
 }
