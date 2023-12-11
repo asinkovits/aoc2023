@@ -76,46 +76,20 @@ public class Day10 extends AbstractDay<Context> {
         List<Coordinate> neighbours = getValidNeighbourPipes(start, map, max);
         Coordinate firstSection = neighbours.get(0);
 
-        List<Pair<Coordinate, Character>> path = calculatePathOfTheLoop(start, firstSection, map);
-        Set<Coordinate> pathCoordinateSet = path.stream().map(Pair::getLeft).collect(Collectors.toSet());
-        List<Coordinate> pathCoordinateList = path.stream().map(Pair::getLeft).toList();
+        List<Coordinate> path = calculatePathOfTheLoop(start, firstSection, map)
+                .stream()
+                .map(Pair::getLeft)
+                .toList();
+        Set<Coordinate> pathCoordinateSet = new HashSet<>(path);
         Set<Coordinate> outsExcludedByFill = markSectionsOutOfTheLoop(Coordinate.of(0, 0), pathCoordinateSet, max);
 
         List<Coordinate> leftover = map.keySet()
                 .stream()
                 .filter(Predicate.not(outsExcludedByFill::contains))
                 .filter(Predicate.not(pathCoordinateSet::contains))
-                .filter(coordinate -> isInPath(coordinate, pathCoordinateList))
+                .filter(coordinate -> isInPath(coordinate, path))
                 .sorted(Comparator.comparing(Coordinate::getX).thenComparing(Coordinate::getY))
                 .toList();
-
-
-        List<Pair<Coordinate, Long>> list1 = leftover
-                .stream()
-                .map(coordinate -> Pair.of(coordinate, countPathCrossingOnX(coordinate, pathCoordinateSet, map)))
-                .filter(pair -> pair.getRight() % 2 != 0)
-                .toList();
-
-        List<Pair<Coordinate, Long>> list2 = leftover
-                .stream()
-                .map(coordinate -> Pair.of(coordinate, countPathCrossingOnY(coordinate, pathCoordinateSet, map)))
-                .filter(pair -> pair.getRight() % 2 != 0)
-                .toList();
-
-        List<Coordinate> ins = Stream.concat(list2.stream(), list1.stream()).map(Pair::getLeft).toList();
-
-        draw(path, outsExcludedByFill, leftover, max, "path.out");
-        //draw(path, List.of(), List.of(), max, "path.out");
-
-//        Set<Coordinate> s1 = list.stream().map(Pair::getLeft).collect(Collectors.toSet());
-//        Set<Coordinate> s2 = list2.stream().map(Pair::getLeft).collect(Collectors.toSet());
-//
-//        List<Coordinate> list1 = leftover.stream()
-//                .filter(s1::contains)
-//                .filter(s2::contains)
-//                .sorted(Comparator.comparing(Coordinate::getX).thenComparing(Coordinate::getY))
-//                .toList();
-
 
         return leftover.size();
     }
@@ -125,7 +99,7 @@ public class Day10 extends AbstractDay<Context> {
         boolean c = false;
         for (int i = 0; i < path.size(); i++) {
             if(inspectedCoordinate.equals(path.get(i))){
-                return true;
+                return false;
             }
 
             if ((path.get(i).y > inspectedCoordinate.y) != (path.get(j).y > inspectedCoordinate.y)) {
@@ -142,36 +116,6 @@ public class Day10 extends AbstractDay<Context> {
         }
 
         return c;
-    }
-
-    private long countPathCrossingOnX(Coordinate coordinate, Set<Coordinate> pathCoordinateSet, Map<Coordinate, Character> map) {
-        long count = IntStream.range(0, coordinate.getX())
-                .mapToObj(x -> Coordinate.of(x, coordinate.y))
-                .filter(pathCoordinateSet::contains)
-                .filter(c -> !isHorizontal(c, map))
-                .count();
-        return count;
-    }
-
-    private long countPathCrossingOnY(Coordinate coordinate, Set<Coordinate> pathCoordinateSet, Map<Coordinate, Character> map) {
-        long count = IntStream.range(0, coordinate.getY())
-                .mapToObj(y -> Coordinate.of(coordinate.x, y))
-                .filter(pathCoordinateSet::contains)
-                .filter(c -> !isVertical(c, map))
-                .count();
-        return count;
-    }
-
-    private boolean isVertical(Coordinate coordinate, Map<Coordinate, Character> map) {
-        Character symbol = map.get(coordinate);
-        Pipe pipe = Pipe.bySymbol(symbol);
-        return pipe == Pipe.NS;
-    }
-
-    private boolean isHorizontal(Coordinate coordinate, Map<Coordinate, Character> map) {
-        Character symbol = map.get(coordinate);
-        Pipe pipe = Pipe.bySymbol(symbol);
-        return pipe == Pipe.EW;
     }
 
     private Set<Coordinate> markSectionsOutOfTheLoop(
@@ -198,54 +142,6 @@ public class Day10 extends AbstractDay<Context> {
             result.add(current);
         }
         return result;
-    }
-
-    private void draw(
-            List<Pair<Coordinate, Character>> path,
-            Collection<Coordinate> out,
-            Collection<Coordinate> in,
-            Coordinate max,
-            String filename) {
-        // Create a 2D array to store the map
-        char[][] map = new char[max.y][max.x];
-
-        // Fill the map with '.'
-        for (char[] row : map) {
-            Arrays.fill(row, '.');
-        }
-
-        // Update the map with the path
-        for (Pair<Coordinate, Character> pair : path) {
-            Coordinate coordinate = pair.getLeft();
-            map[coordinate.y][coordinate.x] = pair.getRight();
-        }
-
-        for (Coordinate coordinate : out) {
-            map[coordinate.y][coordinate.x] = 'O';
-        }
-
-        for (Coordinate coordinate : in) {
-            map[coordinate.y][coordinate.x] = 'I';
-        }
-
-        int count = 0;
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
-                if('.' == map[i][j]){
-                    count++;
-                }
-            }
-        }
-
-        // Write the map to the file
-        try (FileWriter writer = new FileWriter(filename)) {
-            for (char[] row : map) {
-                writer.write(row);
-                writer.write(System.lineSeparator());
-            }
-        } catch (IOException e) {
-            log.error("Failed to write to file: " + filename, e);
-        }
     }
 
     private List<Pair<Coordinate, Character>> calculatePathOfTheLoop(
