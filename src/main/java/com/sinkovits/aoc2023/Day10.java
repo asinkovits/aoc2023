@@ -24,7 +24,7 @@ import static com.sinkovits.aoc2023.Day10.Context;
 public class Day10 extends AbstractDay<Context> {
 
     public Day10() {
-        //super("input_day10", Context.class);
+        // super("input_day10", Context.class);
         super("input_day10", Context.class);
     }
 
@@ -81,20 +81,23 @@ public class Day10 extends AbstractDay<Context> {
         List<Coordinate> neighbours = getValidNeighbourPipes(start, map, max);
         Coordinate firstSection = neighbours.get(0);
 
-        List<Coordinate> path = calculatePathOfTheLoop(start, firstSection, map)
-                .stream()
-                .map(Pair::getLeft)
-                .toList();
+        List<Coordinate> path =
+                calculatePathOfTheLoop(start, firstSection, map).stream()
+                        .map(Pair::getLeft)
+                        .toList();
         Set<Coordinate> pathCoordinateSet = new HashSet<>(path);
-        Set<Coordinate> outsExcludedByFill = markSectionsOutOfTheLoop(Coordinate.of(0, 0), pathCoordinateSet, max);
+        Set<Coordinate> outsExcludedByFill =
+                markSectionsOutOfTheLoop(Coordinate.of(0, 0), pathCoordinateSet, max);
 
-        List<Coordinate> leftover = map.keySet()
-                .stream()
-                .filter(Predicate.not(outsExcludedByFill::contains))
-                .filter(Predicate.not(pathCoordinateSet::contains))
-                .filter(coordinate -> isInPath(coordinate, path))
-                .sorted(Comparator.comparing(Coordinate::getX).thenComparing(Coordinate::getY))
-                .toList();
+        List<Coordinate> leftover =
+                map.keySet().stream()
+                        .filter(Predicate.not(outsExcludedByFill::contains))
+                        .filter(Predicate.not(pathCoordinateSet::contains))
+                        .filter(coordinate -> isInPath(coordinate, path))
+                        .sorted(
+                                Comparator.comparing(Coordinate::getX)
+                                        .thenComparing(Coordinate::getY))
+                        .toList();
 
         return leftover.size();
     }
@@ -103,17 +106,21 @@ public class Day10 extends AbstractDay<Context> {
         int j = path.size() - 1;
         boolean c = false;
         for (int i = 0; i < path.size(); i++) {
-            if(inspectedCoordinate.equals(path.get(i))){
+            if (inspectedCoordinate.equals(path.get(i))) {
                 return false;
             }
 
-            if ((path.get(i).y > inspectedCoordinate.y) != (path.get(j).y > inspectedCoordinate.y)) {
-                int slope = (inspectedCoordinate.x - path.get(i).x) * (path.get(j).y - path.get(i).y) - (path.get(j).x - path.get(i).x) * (inspectedCoordinate.y - path.get(i).y);
+            if ((path.get(i).y > inspectedCoordinate.y)
+                    != (path.get(j).y > inspectedCoordinate.y)) {
+                int slope =
+                        (inspectedCoordinate.x - path.get(i).x) * (path.get(j).y - path.get(i).y)
+                                - (path.get(j).x - path.get(i).x)
+                                        * (inspectedCoordinate.y - path.get(i).y);
                 if (slope == 0) {
-                    //point is on boundary
+                    // point is on boundary
                     return true;
                 }
-            if ((slope < 0) != (path.get(j).y < path.get(i).y)) {
+                if ((slope < 0) != (path.get(j).y < path.get(i).y)) {
                     c = !c;
                 }
             }
@@ -159,7 +166,7 @@ public class Day10 extends AbstractDay<Context> {
         while (true) {
             result.add(Pair.of(current, map.get(current)));
             Optional<Coordinate> nextPipeSection = getNextValidSection(previous, current, map);
-            Coordinate next = nextPipeSection.get();
+            Coordinate next = nextPipeSection.orElseThrow();
             if (map.get(next) == 'S') {
                 break;
             }

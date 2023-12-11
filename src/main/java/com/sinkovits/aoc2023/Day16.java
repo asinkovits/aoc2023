@@ -9,9 +9,7 @@ public class Day16 extends AbstractDay<Context> {
     }
 
     @Override
-    protected void parseFirst(Integer lineNumber, String line, Context context) {
-
-    }
+    protected void parseFirst(Integer lineNumber, String line, Context context) {}
 
     @Override
     protected long calculateFirst(Context context) {
@@ -19,9 +17,7 @@ public class Day16 extends AbstractDay<Context> {
     }
 
     @Override
-    protected void parseSecond(Integer lineNumber, String line, Context context) {
-
-    }
+    protected void parseSecond(Integer lineNumber, String line, Context context) {}
 
     @Override
     protected long calculateSecond(Context context) {
