@@ -14,7 +14,7 @@ class Day10Test {
         long result = underTest.solveFirst();
 
         // Then
-        assertEquals(0, result);
+        assertEquals(6870, result);
     }
 
     @Test
@@ -23,6 +23,6 @@ class Day10Test {
         long result = underTest.solveSecond();
 
         // Then
-        assertEquals(0, result);
+        assertEquals(287, result);
     }
 }

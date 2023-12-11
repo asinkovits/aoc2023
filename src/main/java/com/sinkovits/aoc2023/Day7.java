@@ -1,5 +1,6 @@
 package com.sinkovits.aoc2023;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,7 @@ public class Day7 extends AbstractDay<Context> {
         return calculateResult(context);
     }
 
+    @AllArgsConstructor
     private enum Card {
         JOKER("G"),
         TWO("2"),
@@ -65,10 +67,6 @@ public class Day7 extends AbstractDay<Context> {
         ACE("A");
 
         private final String code;
-
-        Card(String code) {
-            this.code = code;
-        }
 
         public static Card parse(String code) {
             for (Card card : values()) {

@@ -1,7 +1,6 @@
 package com.sinkovits.aoc2023;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.function.TriConsumer;
 
 import java.io.BufferedReader;
@@ -16,7 +15,6 @@ public class LineProcessor<T> {
     private final Path path;
     private final T context;
 
-    @SneakyThrows(IOException.class)
     public T processLines(TriConsumer<Integer, String, T> processor) {
         try (InputStreamReader isr =
                         new InputStreamReader(
@@ -30,6 +28,8 @@ public class LineProcessor<T> {
             while ((line = br.readLine()) != null) {
                 processor.accept(i++, line, context);
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return context;
     }
