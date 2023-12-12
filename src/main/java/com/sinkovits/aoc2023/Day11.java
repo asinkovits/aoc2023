@@ -40,10 +40,7 @@ public class Day11 extends AbstractDay<Context> {
     private long calculateSolution(Context context, int factor) {
         expandUniverse(context, factor);
         List<Pair<Vector, Vector>> galaxyPairs = createGalaxyPairs(context);
-        return galaxyPairs
-                .stream()
-                .mapToLong(this::manhattanDistance)
-                .sum();
+        return galaxyPairs.stream().mapToLong(this::manhattanDistance).sum();
     }
 
     private int manhattanDistance(Pair<Vector, Vector> pair) {
@@ -51,8 +48,7 @@ public class Day11 extends AbstractDay<Context> {
     }
 
     private int manhattanDistance(Vector left, Vector right) {
-        return Math.abs(left.x - right.x)
-                + Math.abs(left.y - right.y);
+        return Math.abs(left.x - right.x) + Math.abs(left.y - right.y);
     }
 
     private List<Pair<Vector, Vector>> createGalaxyPairs(Context context) {
@@ -115,7 +111,8 @@ public class Day11 extends AbstractDay<Context> {
     }
 
     protected static class Context {
-        Set<Vector> galaxies = new TreeSet<>(Comparator.comparing(Vector::getX).thenComparing(Vector::getY));
+        Set<Vector> galaxies =
+                new TreeSet<>(Comparator.comparing(Vector::getX).thenComparing(Vector::getY));
         int sizeX;
         int sizeY;
     }

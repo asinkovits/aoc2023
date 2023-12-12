@@ -103,7 +103,7 @@ public class Day10 extends AbstractDay<Context> {
     }
 
     private boolean isInPath(Coordinate inspectedCoordinate, List<Coordinate> path) {
-        //int j = path.size() - 1;
+        // int j = path.size() - 1;
         boolean c = false;
         Coordinate previous = path.get(path.size() - 1);
         for (Coordinate current : path) {
@@ -111,12 +111,10 @@ public class Day10 extends AbstractDay<Context> {
                 return false;
             }
 
-            if ((current.y > inspectedCoordinate.y)
-                    != (previous.y > inspectedCoordinate.y)) {
+            if ((current.y > inspectedCoordinate.y) != (previous.y > inspectedCoordinate.y)) {
                 int slope =
                         (inspectedCoordinate.x - current.x) * (previous.y - current.y)
-                                - (previous.x - current.x)
-                                * (inspectedCoordinate.y - current.y);
+                                - (previous.x - current.x) * (inspectedCoordinate.y - current.y);
                 if (slope == 0) {
                     // point is on boundary
                     return true;
