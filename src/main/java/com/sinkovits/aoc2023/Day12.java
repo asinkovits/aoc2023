@@ -13,13 +13,13 @@ import static com.sinkovits.aoc2023.Day12.*;
 public class Day12 extends AbstractDay<Context> {
 
     private static final Cache<CalcKey, Long> CACHE =
-            Caffeine.newBuilder().weakKeys().maximumSize(50_000_000).build();
+            Caffeine.newBuilder().weakKeys().maximumSize(10_000_000).build();
 
     // rest of your code
 
     public Day12() {
         super("test", Context.class);
-        //        super("input_day12", Context.class);
+//                super("input_day12", Context.class);
     }
 
     @Override
@@ -33,7 +33,57 @@ public class Day12 extends AbstractDay<Context> {
 
     @Override
     protected long calculateFirst(Context context) {
-        return context.rows.stream().mapToLong(this::calculatePossibleArrangements).sum();
+        Context input = createInput();
+        return input.rows.stream().mapToLong(this::calculatePossibleArrangementsDp).sum();
+    }
+
+    private static Context createInput() {
+        Context context1 = new Context();
+        context1.rows.add(createRow("???.### 1,1,3"));
+//        context1.rows.add(createRow(".??..??...?##. 1,1,3"));
+//        context1.rows.add(createRow("?#?#?#?#?#?#?#? 1,3,1,6"));
+//        context1.rows.add(createRow("????.#...#... 4,1,1"));
+//        context1.rows.add(createRow("????.######..#####. 1,6,5"));
+//        context1.rows.add(createRow("?###???????? 3,2,1"));
+        return context1;
+    }
+
+    private static SpringRow createRow(String line) {
+        SpringRow row = new SpringRow();
+        String[] split = line.split(StringUtils.SPACE);
+        row.data = split[0];
+        row.brokenSprings = ParsingUtil.parseNumbers(split[1]);
+        return row;
+    }
+
+    private long calculatePossibleArrangementsDp(SpringRow row) {
+        List<Long> brokenSprings = row.brokenSprings;
+        String data = row.data;
+
+        long targetSum = brokenSprings.stream().mapToLong(Long::longValue).sum();
+        long[][] dp = new long[data.length() + 1][(int) targetSum + 1];
+
+        // Base cases
+        dp[0][0] = 1;
+        for (int i = 1; i <= targetSum; i++) {
+            dp[0][i] = 0;
+        }
+
+        // DP calculation
+        for (int i = 1; i <= data.length(); i++) {
+            for (int j = 0; j <= targetSum; j++) {
+                if (data.charAt(i - 1) == '?') {
+                    dp[i][j] = dp[i - 1][j];
+                    if (j > 0) {
+                        dp[i][j] += dp[i - 1][j - 1];
+                    }
+                } else if (data.charAt(i - 1) == '#' && j > 0) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+            }
+        }
+
+        return dp[data.length()][(int) targetSum];
     }
 
     @Override
@@ -70,8 +120,8 @@ public class Day12 extends AbstractDay<Context> {
         return calc(input, regexpPattern(five(brokenSprings)), regexp(five(brokenSprings)), jokers, wrongSprings, targetSum);
     }
 
-    private long calc(
-            String input, String regexpPattern, Pattern regexp, long jokers, long wrongSprings, long targetSum) {
+    private long calc(String input, String regexpPattern,
+                      Pattern regexp, long jokers, long wrongSprings, long targetSum) {
         CalcKey key = new CalcKey(input, regexpPattern);
         Long l = CACHE.getIfPresent(key);
         if (l != null) {
@@ -159,6 +209,7 @@ public class Day12 extends AbstractDay<Context> {
     protected static class Context {
         List<SpringRow> rows = new ArrayList<>();
     }
+
 
     protected static class SpringRow {
         String data;
