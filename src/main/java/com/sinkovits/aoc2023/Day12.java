@@ -2,6 +2,8 @@ package com.sinkovits.aoc2023;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -15,11 +17,9 @@ public class Day12 extends AbstractDay<Context> {
     private static final Cache<CalcKey, Long> CACHE =
             Caffeine.newBuilder().weakKeys().maximumSize(10_000_000).build();
 
-    // rest of your code
-
     public Day12() {
         super("test", Context.class);
-//                super("input_day12", Context.class);
+        //                super("input_day12", Context.class);
     }
 
     @Override
@@ -27,41 +27,76 @@ public class Day12 extends AbstractDay<Context> {
         SpringRow row = new SpringRow();
         String[] split = line.split(StringUtils.SPACE);
         row.data = split[0];
-        row.brokenSprings = ParsingUtil.parseNumbers(split[1]);
+        row.brokenSprings =
+                ParsingUtil.parseNumbers(split[1]).stream().map(Day12::longToIntCast).toList();
         context.rows.add(row);
     }
 
     @Override
     protected long calculateFirst(Context context) {
-        Context input = createInput();
-        return input.rows.stream().mapToLong(this::calculatePossibleArrangementsDp).sum();
+        return context.rows.stream().mapToLong(this::calculatePossibleArrangementsDp).sum();
     }
 
-    private static Context createInput() {
-        Context context1 = new Context();
-        context1.rows.add(createRow("???.### 1,1,3"));
-//        context1.rows.add(createRow(".??..??...?##. 1,1,3"));
-//        context1.rows.add(createRow("?#?#?#?#?#?#?#? 1,3,1,6"));
-//        context1.rows.add(createRow("????.#...#... 4,1,1"));
-//        context1.rows.add(createRow("????.######..#####. 1,6,5"));
-//        context1.rows.add(createRow("?###???????? 3,2,1"));
-        return context1;
-    }
-
-    private static SpringRow createRow(String line) {
+    public static SpringRow createRow(String line) {
         SpringRow row = new SpringRow();
         String[] split = line.split(StringUtils.SPACE);
         row.data = split[0];
-        row.brokenSprings = ParsingUtil.parseNumbers(split[1]);
+        row.brokenSprings =
+                ParsingUtil.parseNumbers(split[1]).stream().map(Day12::longToIntCast).toList();
         return row;
     }
 
     private long calculatePossibleArrangementsDp(SpringRow row) {
-        List<Long> brokenSprings = row.brokenSprings;
-        String data = row.data;
+        List<Integer> list =
+                row.brokenSprings.stream().mapToInt(Day12::longToIntCast).boxed().toList();
+        return calculateArrangements(row.data, list);
+    }
 
-        long targetSum = brokenSprings.stream().mapToLong(Long::longValue).sum();
-        long[][] dp = new long[data.length() + 1][(int) targetSum + 1];
+    private long calculatePossibleArrangementsRec(SpringRow row) {
+        List<Integer> list =
+                row.brokenSprings.stream().mapToInt(Day12::longToIntCast).boxed().toList();
+        return calculateArrangements((row.data + ".").toCharArray(), list);
+    }
+
+    private long calculateArrangements(char[] charArray, List<Integer> list) {
+        int i = 0;
+
+        return 0;
+    }
+
+    private long calculateArrangements(char[] charArray, int charPos, List<Integer> list, char prev, int springPos, int springVal) {
+        if(charPos == charArray.length - 1) {
+            return 0;
+        }
+
+        if(charArray[charPos] == '.') {
+            return 0;
+        }
+
+        if(charArray[charPos] == '#') {
+            if(springVal == 1) {
+                return 1;
+            } else {
+                return calculateArrangements(charArray, charPos++, list, '#', springPos, springVal--);
+            }
+        }
+
+        if(charArray[charPos] == '?') {
+
+        }
+
+        return 0;
+    }
+
+    public static int longToIntCast(long number) {
+        return (int) number;
+    }
+
+    public int calculateArrangements(String springs, List<Integer> brokenSprings) {
+        char[] chars = springs.toCharArray();
+        int targetSum = brokenSprings.stream().mapToInt(Integer::intValue).sum();
+
+        int[][] dp = new int[chars.length + 1][targetSum + 1];
 
         // Base cases
         dp[0][0] = 1;
@@ -70,20 +105,37 @@ public class Day12 extends AbstractDay<Context> {
         }
 
         // DP calculation
-        for (int i = 1; i <= data.length(); i++) {
+        for (int i = 1; i <= chars.length; i++) {
             for (int j = 0; j <= targetSum; j++) {
-                if (data.charAt(i - 1) == '?') {
+                if (springs.charAt(i - 1) == '.') {
                     dp[i][j] = dp[i - 1][j];
+                } else if (springs.charAt(i - 1) == '#') {
+                    handleBrokenSpringCase(i, j, dp);
+                } else if (springs.charAt(i - 1) == '?') {
+                    dp[i][j] = dp[i - 1][j]; // . case
                     if (j > 0) {
-                        dp[i][j] += dp[i - 1][j - 1];
+                        handleBrokenSpringCase(i, j, dp);
                     }
-                } else if (data.charAt(i - 1) == '#' && j > 0) {
-                    dp[i][j] = dp[i - 1][j - 1];
                 }
             }
         }
 
-        return dp[data.length()][(int) targetSum];
+        return dp[chars.length][targetSum];
+    }
+
+    private static void handleBrokenSpringCase(int i, int j, int[][] dp) {
+        if (j > 0) {
+            // If we have a valid broken spring otherwise 0.
+            // @TODO: multi value case
+            // int currentSpring = brokenSprings.get(j - 1);
+            if (j <= i) {
+                dp[i][j] = dp[i - 1][j - 1];
+                if (dp[i - 1][j] > 0) {
+                    // If the previous state was valid then this cannot be. Unless it's a ?
+                    dp[i][j] += 1 - dp[i - 1][j];
+                }
+            }
+        }
     }
 
     @Override
@@ -101,27 +153,44 @@ public class Day12 extends AbstractDay<Context> {
 
     private long calculatePossibleArrangements(SpringRow row) {
         // String[] split = row.data.split("\\?", -1);
-        List<Long> brokenSprings = row.brokenSprings;
+        List<Integer> brokenSprings = row.brokenSprings;
 
         long jokers = row.data.chars().filter(ch -> ch == '?').count();
         long wrongSprings = row.data.chars().filter(ch -> ch == '#').count();
-        long targetSum = brokenSprings.stream().mapToLong(Long::longValue).sum();
-        return calc(row.data, regexpPattern(brokenSprings), regexp(brokenSprings), jokers, wrongSprings, targetSum);
+        int targetSum = brokenSprings.stream().mapToInt(Integer::intValue).sum();
+        return calc(
+                row.data,
+                regexpPattern(brokenSprings),
+                regexp(brokenSprings),
+                jokers,
+                wrongSprings,
+                targetSum);
     }
 
     private long calculatePossibleArrangements2(SpringRow row) {
         // String[] split = row.data.split("\\?", -1);
-        List<Long> brokenSprings = row.brokenSprings;
+        List<Integer> brokenSprings = row.brokenSprings;
 
         String input = five(row.data);
         long jokers = input.chars().filter(ch -> ch == '?').count();
         long wrongSprings = input.chars().filter(ch -> ch == '#').count();
-        long targetSum = brokenSprings.stream().mapToLong(Long::longValue).sum();
-        return calc(input, regexpPattern(five(brokenSprings)), regexp(five(brokenSprings)), jokers, wrongSprings, targetSum);
+        int targetSum = brokenSprings.stream().mapToInt(Integer::intValue).sum();
+        return calc(
+                input,
+                regexpPattern(five(brokenSprings)),
+                regexp(five(brokenSprings)),
+                jokers,
+                wrongSprings,
+                targetSum);
     }
 
-    private long calc(String input, String regexpPattern,
-                      Pattern regexp, long jokers, long wrongSprings, long targetSum) {
+    private long calc(
+            String input,
+            String regexpPattern,
+            Pattern regexp,
+            long jokers,
+            long wrongSprings,
+            int targetSum) {
         CalcKey key = new CalcKey(input, regexpPattern);
         Long l = CACHE.getIfPresent(key);
         if (l != null) {
@@ -144,8 +213,15 @@ public class Day12 extends AbstractDay<Context> {
                     new StringBuilder(input).replace(lastIndex, lastIndex + 1, ".").toString();
             String string2 =
                     new StringBuilder(input).replace(lastIndex, lastIndex + 1, "#").toString();
-            long result = calc(string1, regexpPattern, regexp, jokers - 1, wrongSprings, targetSum)
-                    + calc(string2, regexpPattern, regexp, jokers - 1, wrongSprings + 1, targetSum);
+            long result =
+                    calc(string1, regexpPattern, regexp, jokers - 1, wrongSprings, targetSum)
+                            + calc(
+                                    string2,
+                                    regexpPattern,
+                                    regexp,
+                                    jokers - 1,
+                                    wrongSprings + 1,
+                                    targetSum);
             CACHE.put(key, result);
             return result;
         }
@@ -198,31 +274,32 @@ public class Day12 extends AbstractDay<Context> {
         return sj.toString();
     }
 
-    private List<Long> five(List<Long> brokenSprings) {
-        List<Long> result = new ArrayList<>(brokenSprings.size() * 5);
+    private List<Integer> five(List<Integer> brokenSprings) {
+        List<Integer> result = new ArrayList<>(brokenSprings.size() * 5);
         for (int i = 0; i < 5; i++) {
             result.addAll(brokenSprings);
         }
         return result;
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
     protected static class Context {
         List<SpringRow> rows = new ArrayList<>();
     }
 
-
-    protected static class SpringRow {
+    public static class SpringRow {
         String data;
-        List<Long> brokenSprings;
+        List<Integer> brokenSprings;
     }
 
-    Pattern regexp(List<Long> brokenSprings) {
+    Pattern regexp(List<Integer> brokenSprings) {
         return Pattern.compile(regexpPattern(brokenSprings));
     }
 
-    private static String regexpPattern(List<Long> brokenSprings) {
+    private static String regexpPattern(List<Integer> brokenSprings) {
         StringJoiner sj = new StringJoiner("\\.{1}\\.*", "\\.*", "\\.*");
-        for (Long brokenSpring : brokenSprings) {
+        for (Integer brokenSpring : brokenSprings) {
             sj.add("#{%d}".formatted(brokenSpring));
         }
         return sj.toString();
