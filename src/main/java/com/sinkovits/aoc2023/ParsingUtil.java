@@ -38,4 +38,8 @@ public class ParsingUtil {
     public static String removeNonNumeric(String input) {
         return input.replaceAll(NON_NUMERIC_REGEX, StringUtils.EMPTY);
     }
+
+    public static int longToIntCast(long number) {
+        return (int) number;
+    }
 }
